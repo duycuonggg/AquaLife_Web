@@ -1,0 +1,17 @@
+export function getUserFromToken() {
+  try {
+    const token = localStorage.getItem('auth_token')
+    if (!token) return null
+    const parts = token.split('.')
+    if (parts.length < 2) return null
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return payload
+  } catch (err) {
+    return null
+  }
+}
+
+export function getUserRole() {
+  const u = getUserFromToken()
+  return u?.role || null
+}

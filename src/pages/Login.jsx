@@ -14,6 +14,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import '../styles/login.css'
 import { loginAPI } from '../apis'
+import { getUserFromToken } from '~/utils/auth'
 import logo from '~/assets/logo.png'
 
 export default function Login() {
@@ -31,10 +32,25 @@ export default function Login() {
     if (!password) { setErrorMsg('Password is required'); return }
     try {
       setLoading(true)
-      await loginAPI({ email, password })
-      // On success you may want to store token and navigate to app
-      // For now redirect to root or dashboard
-      navigate('/', { replace: true })
+      const res = await loginAPI({ email, password })
+      // store token
+      if (res?.token) {
+        localStorage.setItem('auth_token', res.token)
+      }
+
+      // Prefer role from token payload (more reliable) but fall back to response body
+      const tokenPayload = getUserFromToken()
+      const roleFromToken = tokenPayload?.role
+      const user = res?.employee || res?.customer
+      const effectiveRole = roleFromToken || user?.role
+
+      // If employee/staff/manager/admin, redirect to admin
+      if (effectiveRole && effectiveRole !== 'customer') {
+        navigate('/admin', { replace: true })
+      } else {
+        // default redirect (customer) -> homepage/register
+        navigate('/', { replace: true })
+      }
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Login failed. Please try again.')
     } finally {
