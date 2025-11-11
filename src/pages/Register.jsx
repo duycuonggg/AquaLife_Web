@@ -53,12 +53,32 @@ const Register = () => {
     setErrorMsg('')
 
     // 1. Validate cơ bản
-    if (formData.password !== formData.confirmPassword) {
+    // trim values
+    const fullName = formData.fullName.trim()
+    const email = formData.email.trim()
+    const phone = formData.phone.trim()
+    const address = formData.address.trim()
+    const password = formData.password
+    const confirmPassword = formData.confirmPassword
+
+    if (password !== confirmPassword) {
       setErrorMsg('Confirm Password does not match.')
       return
     }
-    if (formData.password.length < 6) {
-      setErrorMsg('Password must be at least 6 characters.')
+    // Server requires password min 10 chars (customersModel validation)
+    if (password.length < 10) {
+      setErrorMsg('Password must be at least 10 characters.')
+      return
+    }
+    // Address must be reasonably long (server requires min 10)
+    if (address.length < 10) {
+      setErrorMsg('Address must be at least 10 characters.')
+      return
+    }
+    // Phone pattern (basic vietnamese mobile pattern similar to backend)
+    const phonePattern = /^(0(3[2-9]|5[2689]|7[06-9]|8[1-689]|9[0-46-9]))\d{7}$/
+    if (phone && !phonePattern.test(phone)) {
+      setErrorMsg('Phone number format is invalid.')
       return
     }
 
@@ -67,11 +87,11 @@ const Register = () => {
       setLoading(true)
       // Chuẩn bị data để gửi xuống BE (cấu trúc tùy thuộc BE của bạn yêu cầu)
       const payload = {
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        password: formData.password
+        name: fullName,
+        email,
+        phone,
+        address,
+        password
       }
 
       await registerAPI(payload)

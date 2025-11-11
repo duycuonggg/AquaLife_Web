@@ -1,12 +1,100 @@
 import axios from 'axios'
 import { API_ROOT } from '~/utils/constants'
 
+const client = axios.create({ baseURL: API_ROOT })
+
+// attach token from localStorage for authenticated requests
+client.interceptors.request.use((config) => {
+  try {
+    const token = localStorage.getItem('auth_token')
+    if (token) config.headers.Authorization = `Bearer ${token}`
+  } catch (err) {
+    // ignored - localStorage may not be available in some test contexts
+  }
+  return config
+})
+
 export const registerAPI = async (data) => {
-  const response = await axios.post(`${API_ROOT}/v1/auth/register`, data)
+  const response = await client.post('/v1/auth/register', data)
   return response.data
 }
 
 export const loginAPI = async (data) => {
-  const response = await axios.post(`${API_ROOT}/v1/auth/login`, data)
+  const response = await client.post('/v1/auth/login', data)
+  return response.data
+}
+
+export const getBranchesAPI = async () => {
+  const response = await client.get('/v1/branches')
+  return response.data
+}
+
+export const createProductAPI = async (data) => {
+  const response = await client.post('/v1/products', data)
+  return response.data
+}
+
+export const getProductsAPI = async () => {
+  const response = await client.get('/v1/products')
+  return response.data
+}
+
+export const getEmployeesAPI = async () => {
+  const response = await client.get('/v1/employees')
+  return response.data
+}
+
+export const getCustomersAPI = async () => {
+  const response = await client.get('/v1/customers')
+  return response.data
+}
+
+export const updateCustomerAPI = async (id, data) => {
+  const response = await client.put(`/v1/customers/${id}`, data)
+  return response.data
+}
+
+export const deleteCustomerAPI = async (id) => {
+  const response = await client.delete(`/v1/customers/${id}`)
+  return response.data
+}
+
+export const deleteAllCustomersAPI = async () => {
+  const response = await client.delete('/v1/customers')
+  return response.data
+}
+
+export const createEmployeeAPI = async (data) => {
+  const response = await client.post('/v1/employees', data)
+  return response.data
+}
+
+export const updateEmployeeAPI = async (id, data) => {
+  const response = await client.put(`/v1/employees/${id}`, data)
+  return response.data
+}
+
+export const deleteEmployeeAPI = async (id) => {
+  const response = await client.delete(`/v1/employees/${id}`)
+  return response.data
+}
+
+export const deleteAllEmployeesAPI = async () => {
+  const response = await client.delete('/v1/employees')
+  return response.data
+}
+
+export const updateProductAPI = async (id, data) => {
+  const response = await client.put(`/v1/products/${id}`, data)
+  return response.data
+}
+
+export const deleteProductAPI = async (id) => {
+  const response = await client.delete(`/v1/products/${id}`)
+  return response.data
+}
+
+export const deleteAllProductsAPI = async () => {
+  const response = await client.delete('/v1/products')
   return response.data
 }
