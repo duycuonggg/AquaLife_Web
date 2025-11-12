@@ -1,0 +1,73 @@
+.home-nav {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.home-nav .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.home-nav .left,
+.home-nav .center,
+.home-nav .right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.home-nav .center {
+  flex: 1;
+  justify-content: center;
+}
+.home-nav .left { justify-content: flex-start; }
+.home-nav .right { justify-content: flex-end; }
+.nav-link {
+  color: #000 !important;
+  text-transform: none;
+  font-weight: 500;
+}
+.nav-link:hover { color: #0b8798 }
+.brand { display:flex; align-items:center; gap:12px; }
+.brand img { width:44px; height:44px; }
+.brand-title { color: #0b8798; font-weight:700; }
+.home-hero { width:100%; background-size:cover; background-position:center center; background-repeat:no-repeat; height:420px; position:relative; }
+@media (min-width: 900px) { .home-hero { height:680px; } }
+.hero-slogan {
+  position: absolute;
+  left: 48px;
+  top: 28%;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: clamp(24px, 4.5vw, 56px);
+  line-height: 1.05;
+  text-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  max-width: 60%;
+  font-style: italic;
+}
+.home-banner { max-width: 1100px; margin: 0 auto; padding: 24px 12px; }
+.home-categories { max-width: 1100px; margin: 0 auto; padding: 36px 12px; background: '#f0fbfb' }
+.home-featured { max-width: 1100px; margin: 0 auto; padding: 24px 12px; }
+.featured-mini { border-radius: 8px; background: #fff; padding: 8px; box-shadow: 0 6px 18px rgba(16,24,32,0.06); }
+.featured-mini .mini-thumb { width: 100%; height: 140px; background-size: cover; background-position: center; border-radius: 6px; }
+.featured-mini .mini-name { font-size: 14px; color: #111; }
+.featured-mini .mini-price { font-size: 16px; color: #d32f2f; margin-top: 6px; }
+.home-testimonials { max-width: 1100px; margin: 0 auto; padding: 36px 12px; }
+.home-newsletter { max-width: 1100px; margin: 0 auto; padding: 24px 12px; }
+/* Newsletter center styles */
+.home-newsletter .subscribe-form { max-width: 700px; margin: 0 auto; display: flex; }
+
+/* Footer styles */
+.site-footer { background: #ffffff; color: #000; padding: 40px 0 12px; }
+.site-footer .footer-inner { max-width: 1100px; margin: 0 auto; padding: 0 12px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 24px; align-items: start; }
+.site-footer .footer-col { line-height: 1.8; text-decoration: none;}
+.site-footer .footer-brand img { border-radius: 8px; }
+.site-footer .social-box { width: 40px; height: 40px; background: rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:center; border-radius:8px; }
+.site-footer .footer-bottom { text-align:center; padding: 18px 12px 6px; opacity: 0.8; font-size: 14px; font-weight: bold; }
+.site-footer .footer-link { text-decoration: none; color: inherit; }
+
+@media (max-width: 900px) {
+  .site-footer .footer-inner { grid-template-columns: 1fr; }
+  .hero-slogan { left: 24px; top: 22%; max-width: 80%; }
+}

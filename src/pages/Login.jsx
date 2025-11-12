@@ -92,7 +92,7 @@ export default function Login() {
           </form>
 
           <Box className="signup-footer">
-            <Typography variant="body2">Bạn chưa có tài khoản{' '}<Link href="/" underline="hover" className="signin-link">Đăng ký</Link></Typography>
+            <Typography variant="body2">Bạn chưa có tài khoản{' '}<Link href="/register" underline="hover" className="signin-link">Đăng ký</Link></Typography>
           </Box>
         </CardContent>
       </Card>
