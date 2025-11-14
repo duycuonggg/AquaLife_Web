@@ -207,7 +207,6 @@ export default function Admin() {
 
         {section === 'customers' && (
           <Box>
-            <Typography variant="h5" gutterBottom>Khách hàng</Typography>
             <Box>
               <Customers />
             </Box>

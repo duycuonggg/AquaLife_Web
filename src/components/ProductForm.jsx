@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, TextField, Button, Card, CardContent, Typography, MenuItem } from '@mui/material'
 import PropTypes from 'prop-types'
-import { createProductAPI, updateProductAPI } from '~/apis/index'
+import { createProductAPI, updateProductAPI, getBranchesAPI } from '~/apis/index'
 
 export default function ProductForm({ onSuccess, initialData, onCancel }) {
   const [name, setName] = useState('')
@@ -9,6 +9,8 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [quantity, setQuantity] = useState('')
+  const [branches, setBranches] = useState([])
+  const [branchId, setBranchId] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [status, setStatus] = useState('available')
   const [loading, setLoading] = useState(false)
@@ -23,9 +25,26 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
       setQuantity(initialData.quantity != null ? String(initialData.quantity) : '')
       setImageUrl(initialData.imageUrl || '')
       setStatus(initialData.status || 'available')
+      setBranchId(initialData.branchesId || initialData.branchId || '')
       setError('')
     }
   }, [initialData])
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        const b = await getBranchesAPI()
+        if (!mounted) return
+        setBranches(Array.isArray(b) ? b : [])
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to load branches', err)
+      }
+    }
+    load()
+    return () => { mounted = false }
+  }, [])
 
   const reset = () => {
     setName('')
@@ -43,6 +62,10 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
       setError('Vui lòng điền đầy đủ: tên, loại, mô tả, giá và ảnh')
       return
     }
+    if (!branchId) {
+      setError('Vui lòng chọn chi nhánh trước khi tạo sản phẩm')
+      return
+    }
 
     const payload = {
       // match backend validation keys
@@ -50,6 +73,7 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
       type,
       price: Number(price),
       quantity: quantity ? Number(quantity) : 0,
+      branchesId: branchId,
       description,
       imageUrl,
       status
@@ -85,6 +109,13 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
 
           <TextField label="Giá (VNĐ)" value={price} onChange={(e) => setPrice(e.target.value)} type="number" required sx={{ gridColumn: '1 / 2' }} />
           <TextField label="Số lượng" value={quantity} onChange={(e) => setQuantity(e.target.value)} type="number" sx={{ gridColumn: '2 / 3' }} />
+
+          <TextField select label="Chi nhánh" value={branchId} onChange={(e) => setBranchId(e.target.value)} sx={{ gridColumn: '1 / -1', maxWidth: 360 }}>
+            <MenuItem value="">-- Chọn chi nhánh --</MenuItem>
+            {branches.map((b) => (
+              <MenuItem key={b._id || b.id} value={b._id || b.id}>{b.name || (`Chi nhánh ${b._id || b.id}`)}</MenuItem>
+            ))}
+          </TextField>
 
           <TextField label="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required sx={{ gridColumn: '1 / -1' }} />
 

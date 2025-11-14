@@ -8,3 +8,6 @@
 @media (min-width: 900px) {
   .card-thumb { height: 220px; }
 }
+
+.shop-filters { display:flex; align-items:center; gap:12px; margin-bottom: 18px; }
+.shop-filters .MuiFormControl-root { min-width: 160px; }

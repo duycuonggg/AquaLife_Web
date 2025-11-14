@@ -1,4 +1,4 @@
 // Prefer Vite env var VITE_API_BASE, otherwise fall back to localhost:1704
-const API_ROOT = import.meta.env.VITE_API_BASE || 'http://localhost:1703'
+const API_ROOT = import.meta.env.VITE_API_BASE || 'http://localhost:1704'
 
 export { API_ROOT }

@@ -10,11 +10,12 @@ import Paper from '@mui/material/Paper'
 import RefreshIcon from '@mui/icons-material/Refresh'
 // ProductList was previously used for card/grid view. The product table is the primary list now.
 import ProductForm from '~/components/ProductForm'
-import { getProductsAPI, deleteProductAPI, deleteAllProductsAPI } from '~/apis/index'
+import { getProductsAPI, deleteProductAPI, deleteAllProductsAPI, getBranchesAPI } from '~/apis/index'
 import { toast } from 'react-toastify'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([])
+  const [branches, setBranches] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [open, setOpen] = useState(false)
@@ -34,8 +35,19 @@ export default function ProductsPage() {
     }
   }
 
+  const fetchBranches = async () => {
+    try {
+      const b = await getBranchesAPI()
+      setBranches(b || [])
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to fetch branches', err)
+    }
+  }
+
   useEffect(() => {
     fetch()
+    fetchBranches()
   }, [])
 
   const handleCreate = () => {
@@ -111,6 +123,7 @@ export default function ProductsPage() {
           <Table size="small">
             <TableHead>
               <TableRow>
+                <TableCell>Chi nhánh</TableCell>
                 <TableCell>Tên</TableCell>
                 <TableCell>Loại</TableCell>
                 <TableCell>Giá</TableCell>
@@ -125,6 +138,7 @@ export default function ProductsPage() {
                 return (p.name || '').toLowerCase().includes(q) || (p.type || '').toLowerCase().includes(q)
               })).map((p) => (
                 <TableRow key={p._id || p.id}>
+                  <TableCell>{branches.find(b => b._id === p.branchesId)?.name || '-'}</TableCell>
                   <TableCell>{p.name}</TableCell>
                   <TableCell>{p.type}</TableCell>
                   <TableCell>{p.price}</TableCell>

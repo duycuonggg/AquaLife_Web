@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Box, Button, Typography, Grid, Card, CardContent, CardActions, TextField, IconButton } from '@mui/material'
+import { Box, Button, Typography, Grid, Card, CardContent, CardActions, TextField } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Link as RouterLink } from 'react-router-dom'
-import ProductList from '~/components/ProductList'
 import { getProductsAPI } from '~/apis/index'
 import logo from '~/assets/logo.png'
 import '~/styles/Home.css'
@@ -11,9 +10,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
 import SupportAgentIcon from '@mui/icons-material/SupportAgent'
 import LoopIcon from '@mui/icons-material/Loop'
-import facebook from '~/assets/facebook.png'
-import instagram from '~/assets/instagram.png'
-import tiktok from '~/assets/tiktok.png'
+import Footer from '~/components/Footer'
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -188,52 +185,7 @@ export default function Home() {
       </Box>
 
       {/* Footer */}
-      <Box component="footer" className="site-footer">
-        <Box className="footer-inner">
-          <Box className="footer-col footer-brand">
-            <Box className='brand'>
-              <img src={logo} alt="AquaLife" className='brand-img' />
-              <Typography fontWeight={700} className='brand-title'>AquaLife</Typography>
-            </Box>
-            <Typography>Chạm vào từng khoảnh khắc <br /> sống động!</Typography>
-          </Box>
-
-          <Box className="footer-col">
-            <Typography fontWeight={700} sx={{ mb: 1 }}>Cửa hàng</Typography>
-            <Box>
-              <RouterLink to="/products" className='footer-link'>Cá Cảnh</RouterLink>
-            </Box>
-            <Box>
-              <RouterLink to="/products" className='footer-link'>Tép cảnh</RouterLink>
-            </Box>
-            <Box>
-              <RouterLink to="/products" className='footer-link'>Đèn</RouterLink>
-            </Box>
-            <Box>
-              <RouterLink to="/products" className='footer-link'>Lọc</RouterLink>
-            </Box>
-          </Box>
-
-          <Box className="footer-col">
-            <Typography fontWeight={700} sx={{ mb: 1 }}>Hỗ trợ</Typography>
-            <Box>Hướng dẫn</Box>
-            <Box>Hỏi đáp</Box>
-            <Box>Liên hệ</Box>
-            <Box>Thông tin vận chuyển</Box>
-          </Box>
-
-          <Box className="footer-col">
-            <Typography fontWeight={700} sx={{ mb: 1 }}>Kết nối</Typography>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <img src={facebook} alt="AquaLife" width={30} height={30} />
-              <img src={instagram} alt="AquaLife" width={30} height={30} />
-              <img src={tiktok} alt="AquaLife" width={30} height={30} />
-            </Box>
-          </Box>
-        </Box>
-        <Box sx={{ height: '1px', background: '#ecf0f1', marginTop: 4 }}></Box>
-        <Box className="footer-bottom">© 2025 || AquaLife Shop. All rights reserved.</Box>
-      </Box>
+      <Footer />
     </Box>
   )
 }

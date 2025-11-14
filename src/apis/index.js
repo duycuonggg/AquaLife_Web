@@ -39,6 +39,11 @@ export const getProductsAPI = async () => {
   return response.data
 }
 
+export const getProductAPI = async (id) => {
+  const response = await client.get(`/v1/products/${id}`)
+  return response.data
+}
+
 export const getEmployeesAPI = async () => {
   const response = await client.get('/v1/employees')
   return response.data
@@ -96,5 +101,15 @@ export const deleteProductAPI = async (id) => {
 
 export const deleteAllProductsAPI = async () => {
   const response = await client.delete('/v1/products')
+  return response.data
+}
+
+export const createOrderAPI = async (data) => {
+  const response = await client.post('/v1/orders', data)
+  return response.data
+}
+
+export const createOrderDetailAPI = async (data) => {
+  const response = await client.post('/v1/order-details', data)
   return response.data
 }
