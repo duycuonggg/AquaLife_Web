@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { getCustomersAPI, updateCustomerAPI, deleteCustomerAPI, deleteAllCustomersAPI } from '~/apis/index'
+import { getCustomersAPI, updateCustomerAPI, deleteCustomerAPI, deleteAllCustomersAPI, getBranchesAPI } from '~/apis/index'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -14,6 +14,7 @@ import { getUserRole } from '~/utils/auth'
 
 export default function Customers() {
   const [customers, setCustomers] = useState([])
+  const [branches, setBranches] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const isAdmin = getUserRole() === 'admin'
@@ -34,7 +35,20 @@ export default function Customers() {
     }
   }
 
-  useEffect(() => { fetch() }, [])
+  const fetchBranches = async () => {
+    try {
+      const b = await getBranchesAPI()
+      setBranches(b)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to load branches', err)
+    }
+  }
+
+  useEffect(() => {
+    fetch()
+    fetchBranches()
+  }, [])
 
   const handleOpenEdit = (c) => {
     setEditing({ ...c })
@@ -108,6 +122,7 @@ export default function Customers() {
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell>Chi nhánh</TableCell>
               <TableCell>Tên</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Số điện thoại</TableCell>
@@ -123,6 +138,7 @@ export default function Customers() {
               return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
             })).map((c) => (
               <TableRow key={c._id || c.id}>
+                <TableCell>{(branches.find(b => (b._id || b.id) === c.branchesId)?.name) || '-'}</TableCell>
                 <TableCell>{c.name}</TableCell>
                 <TableCell>{c.email}</TableCell>
                 <TableCell>{c.phone}</TableCell>

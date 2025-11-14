@@ -88,7 +88,7 @@ export default function Login() {
 
             {errorMsg && <Typography color="error" className="error-text">{errorMsg}</Typography>}
 
-            <Button type="submit" variant="contained" fullWidth className="signup-button" disabled={loading}>{loading ? 'Signing...' : 'Sign In'}</Button>
+            <Button type="submit" variant="contained" fullWidth className="signup-button" disabled={loading}>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</Button>
           </form>
 
           <Box className="signup-footer">
