@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Box, Grid, Card, CardContent, Button, Typography, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
@@ -14,6 +14,7 @@ export default function Shop() {
   const [typeFilter, setTypeFilter] = useState('')
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
+  const [branchFilter, setBranchFilter] = useState('')
 
   const location = useLocation()
 
@@ -30,12 +31,47 @@ export default function Shop() {
     load()
   }, [])
 
+  const navigate = useNavigate()
+
   // initialize type filter from query param if present
   useEffect(() => {
     const paramsQ = new URLSearchParams(location.search)
     const t = paramsQ.get('type') || ''
     if (t) setTypeFilter(t)
+    const b = paramsQ.get('branch') || ''
+    if (b) setBranchFilter(b)
+    else {
+      // if no branch query param, try to read persisted selection from localStorage
+      try {
+        const saved = localStorage.getItem('selectedBranch') || ''
+        if (saved) setBranchFilter(saved)
+      } catch (err) {
+        // ignore
+      }
+    }
   }, [location.search])
+
+  // listen for branchSelected events (dispatched by Header) so filtering works across pages
+  useEffect(() => {
+    const onBranch = (e) => {
+      const id = e?.detail?.id || ''
+      setBranchFilter(id)
+      try {
+        // persist selection so future pages / reloads also know about it
+        if (id) localStorage.setItem('selectedBranch', id)
+        else localStorage.removeItem('selectedBranch')
+        const params = new URLSearchParams(location.search)
+        if (id) params.set('branch', id)
+        else params.delete('branch')
+        const search = params.toString() ? `?${params.toString()}` : ''
+        navigate(`${location.pathname}${search}`, { replace: true })
+      } catch (err) {
+        // ignore
+      }
+    }
+    window.addEventListener('branchSelected', onBranch)
+    return () => window.removeEventListener('branchSelected', onBranch)
+  }, [location.search, location.pathname, navigate])
 
   // Shop page only renders product grid now; product detail moved to ProductDetail page
 
@@ -72,6 +108,23 @@ export default function Shop() {
               const inName = (p.name || '').toLowerCase().includes(q)
               const inType = (p.type || '').toLowerCase().includes(q)
               if (!inName && !inType) return false
+            }
+            // branch filtering
+            if (branchFilter) {
+              const id = String(branchFilter)
+              // product may contain branchesId (single), branchesId array, or stockByBranch array
+              if (!p) return false
+              if (p.branchesId && String(p.branchesId) === id) {
+                // matched
+              } else if (Array.isArray(p.branchesId) && p.branchesId.map(x => String(x)).includes(id)) {
+                // matched
+              } else if (Array.isArray(p.stockByBranch)) {
+                if (!p.stockByBranch.find(sb => String(sb.branch || sb.branchesId || sb.branchId) === id)) return false
+              } else if (p.branchId && String(p.branchId) === id) {
+                // matched
+              } else {
+                return false
+              }
             }
             if (typeFilter) {
               if ((p.type || '') !== typeFilter) return false

@@ -38,6 +38,15 @@ export default function Login() {
         localStorage.setItem('auth_token', res.token)
       }
 
+      // persist user image/name from login response if provided (so Header can show avatar without extra API calls)
+      try {
+        const user = res?.employee || res?.customer
+        if (user?.image) localStorage.setItem('auth_user_image', user.image)
+        if (user?.name) localStorage.setItem('auth_user_name', user.name)
+      } catch (e) {
+        // ignore storage errors
+      }
+
       // Prefer role from token payload (more reliable) but fall back to response body
       const tokenPayload = getUserFromToken()
       const roleFromToken = tokenPayload?.role
