@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, Typography, Grid, Card, CardContent, CardActions, TextField } from '@mui/material'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Link as RouterLink } from 'react-router-dom'
 import { getProductsAPI } from '~/apis/index'
-import logo from '~/assets/logo.png'
+// logo and shopping cart icon unused here (Header renders brand/cart)
 import '~/styles/Home.css'
 const heroImg = new URL('../assets/ChatGPT Image Nov 11, 2025, 10_38_32 PM.png', import.meta.url).href
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
@@ -11,11 +10,13 @@ import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
 import SupportAgentIcon from '@mui/icons-material/SupportAgent'
 import LoopIcon from '@mui/icons-material/Loop'
 import Footer from '~/components/Footer'
+import Header from '~/components/Header'
 
 export default function Home() {
   const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [search, setSearch] = useState('')
+  const [, setLoading] = useState(false)
+  const [search] = useState('')
+  const [selectedBranchId, setSelectedBranchId] = useState('')
 
   useEffect(() => {
     const load = async () => {
@@ -33,7 +34,31 @@ export default function Home() {
     load()
   }, [])
 
-  const featured = (products || []).slice(0, 8)
+  useEffect(() => {
+    const onBranch = (e) => {
+      const id = e?.detail?.id || ''
+      setSelectedBranchId(id)
+      // scroll to featured products
+      window.scrollTo({ top: 400, behavior: 'smooth' })
+    }
+    window.addEventListener('branchSelected', onBranch)
+    return () => window.removeEventListener('branchSelected', onBranch)
+  }, [])
+
+  const matchesBranch = (p) => {
+    if (!selectedBranchId) return true
+    // product may contain branchesId (single), branchesId array, or stockByBranch array
+    if (!p) return false
+    if (p.branchesId && String(p.branchesId) === String(selectedBranchId)) return true
+    if (Array.isArray(p.branchesId) && p.branchesId.map(x => String(x)).includes(String(selectedBranchId))) return true
+    if (Array.isArray(p.stockByBranch)) {
+      if (p.stockByBranch.find(sb => String(sb.branch || sb.branchesId || sb.branchId) === String(selectedBranchId))) return true
+    }
+    if (p.branchId && String(p.branchId) === String(selectedBranchId)) return true
+    return false
+  }
+
+  const featured = (products || []).filter(matchesBranch).slice(0, 8)
 
   const categories = [
     { title: 'Bể cá', subtitle: 'Tanks' },
@@ -44,43 +69,24 @@ export default function Home() {
 
   return (
     <Box>
-      {/* Navbar */}
-      <header className="home-nav">
-        <div className="container">
-          <div className="right">
-            <div className="brand">
-              <img src={logo} alt="AquaLife" />
-              <span className="brand-title">AquaLife</span>
-            </div>
-          </div>
-
-          <nav className="center" aria-label="main navigation">
-            <Button component={RouterLink} to="/" className="nav-link">Trang chủ</Button>
-            <Button component={RouterLink} to="/products" className="nav-link">Sản phẩm</Button>
-            <Button component={RouterLink} to="/about" className="nav-link">Giới thiệu</Button>
-            <Button component={RouterLink} to="/contact" className="nav-link">Liên hệ</Button>
-          </nav>
-
-          <div className="left">
-            <Button component={RouterLink} to="/cart" variant="text" aria-label="cart">
-              <ShoppingCartIcon sx={{ color: '#e67e22' }}/>
-            </Button>
-            <Button className="nav-link"component={RouterLink} to="/login" variant="text" >Đăng nhập</Button>
-          </div>
-        </div>
-      </header>
+      {/* Navbar (shared) */}
+      <Header />
 
       {/* Hero (full-bleed image with slogan) */}
       <Box className="home-hero" role="img" aria-label="Hero banner" style={{ backgroundImage: `url(${heroImg})` }}>
-        <Box className="hero-slogan">Chạm vào từng khoảnh khắc <br /> sống động!</Box>
+        <Box className="hero-slogan">
+          <span className="line line1">Chạm vào từng khoảnh khắc</span>
+          <br />
+          <span className="line line2">sống động <span style={{ color: 'red' }}>&#9825;</span></span>
+        </Box>
       </Box>
 
       {/* Categories */}
       <Box sx={{ background: '#f0fbfb', py: 4 }}>
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Danh mục sản phẩm</Typography>
+        </Box>
         <Box className="home-categories">
-          <Box display="flex" alignItems="center" gap={2} mb={3}>
-            <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%' }}>Danh mục sản phẩm</Typography>
-          </Box>
           <Grid container spacing={3}>
             {categories.map((c) => (
               <Grid item xs={12} sm={6} md={3} key={c.title}>
@@ -102,7 +108,7 @@ export default function Home() {
       {/* Featured Products (minimal view: image, name, price) */}
       <Box className="home-featured">
         <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%' }}>Sản phẩm nổi bật</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Sản phẩm nổi bật</Typography>
           <Box sx={{ flex: 1 }} />
         </Box>
 
@@ -113,7 +119,12 @@ export default function Home() {
             return (p.name || '').toLowerCase().includes(q) || (p.type || '').toLowerCase().includes(q)
           }).map((p) => (
             <Grid item xs={6} sm={4} md={3} key={p._id || p.id}>
-              <Box className="featured-mini" sx={{ textAlign: 'center', p: 1 }}>
+              <Box
+                className="featured-mini"
+                component={RouterLink}
+                to={`/products/${p._id || p.id}`}
+                sx={{ textAlign: 'center', p: 1, textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+              >
                 {p.imageUrl ? (
                   <Box className="mini-thumb" sx={{ backgroundImage: `url(${p.imageUrl})` }} />
                 ) : (
@@ -129,6 +140,9 @@ export default function Home() {
 
       {/* Feature icons */}
       <Box sx={{ background: '#f0fbfb', py: 4 }}>
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
+        </Box>
         <Box sx={{ maxWidth: 1100, mx: 'auto', px: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
@@ -165,7 +179,9 @@ export default function Home() {
 
       {/* Testimonials + Newsletter */}
       <Box className="home-testimonials">
-        <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, textAlign: 'center', width: '100%' }}>Khách hàng của chúng tôi</Typography>
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
+        </Box>
         <Grid container spacing={3} mb={4}>
           <Grid item xs={12} md={4}><Card><CardContent><Typography fontWeight={700}>Sarah Johnson</Typography><Typography variant="body2" color="text.secondary">Love the selection and fast delivery.</Typography></CardContent></Card></Grid>
           <Grid item xs={12} md={4}><Card><CardContent><Typography fontWeight={700}>Michael Chen</Typography><Typography variant="body2" color="text.secondary">Great quality fish and plants.</Typography></CardContent></Card></Grid>
@@ -175,8 +191,10 @@ export default function Home() {
 
       <Box sx={{ background: '#f0fbfb', py: 4 }}>
         <Box className="home-newsletter" >
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, textAlign: 'center', width: '100%' }}>Hãy đăng kí ngay</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>Nhận các mẹo chăm sóc bể cá chuyên nghiệp, ưu đãi độc quyền và sản phẩm mới.</Typography>
+          <Box display="flex" alignItems="center" gap={2} mb={2} justifyContent={'center'} flexDirection={'column'}>
+            <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10 }}>Hãy đăng ký ngay</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 10, textAlign: 'center' }}>Nhận các mẹo chăm sóc bể cá chuyên nghiệp, ưu đãi độc quyền và sản phẩm mới.</Typography>
+          </Box>
           <Box className="subscribe-form" display="flex" gap={2}>
             <TextField placeholder="Nhập email của bạn" fullWidth />
             <Button variant="contained">Gửi</Button>

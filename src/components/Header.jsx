@@ -1,16 +1,29 @@
 import { useEffect, useState } from 'react'
-import { Button, Menu, MenuItem, Badge } from '@mui/material'
+import { Button, Menu, MenuItem, Badge, Avatar, IconButton, Divider, ListItemIcon } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Link as RouterLink } from 'react-router-dom'
 import logo from '~/assets/logo.png'
 import '~/styles/Home.css'
 import { getProductsAPI } from '~/apis/index'
-import { cartCount, getCart } from '~/utils/cart'
+import { getBranchesAPI, getCustomerAPI } from '~/apis/index'
+import { cartCount } from '~/utils/cart'
+import { getUserFromToken } from '~/utils/auth'
+import { useNavigate } from 'react-router-dom'
+import LogoutIcon from '@mui/icons-material/Logout'
+import PersonIcon from '@mui/icons-material/Person'
+import AllInboxIcon from '@mui/icons-material/AllInbox'
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [types, setTypes] = useState([])
+  const [branches, setBranches] = useState([])
+  const [branchAnchor, setBranchAnchor] = useState(null)
   const [count, setCount] = useState(0)
+  const [userAnchor, setUserAnchor] = useState(null)
+  const [customerAvatar, setCustomerAvatar] = useState('')
+  const [currentUserName, setCurrentUserName] = useState('')
+  const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     let mounted = true
@@ -30,9 +43,25 @@ export default function Header() {
   }, [])
 
   useEffect(() => {
+    let mounted = true
+    const loadBranches = async () => {
+      try {
+        const b = await getBranchesAPI()
+        if (!mounted) return
+        setBranches(Array.isArray(b) ? b : [])
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to load branches', err)
+      }
+    }
+    loadBranches()
+    return () => { mounted = false }
+  }, [])
+
+  useEffect(() => {
     // initialize cart count
     try { setCount(cartCount()) } catch (e) { setCount(0) }
-    const onUpdate = (e) => {
+    const onUpdate = () => {
       try { setCount(cartCount()) } catch (err) { setCount(0) }
     }
     window.addEventListener('cartUpdated', onUpdate)
@@ -45,6 +74,66 @@ export default function Header() {
 
   const handleOpen = (e) => setAnchorEl(e.currentTarget)
   const handleClose = () => setAnchorEl(null)
+  const handleOpenUser = (e) => setUserAnchor(e.currentTarget)
+  const handleCloseUser = () => setUserAnchor(null)
+  const handleOpenBranches = (e) => setBranchAnchor(e.currentTarget)
+  const handleCloseBranches = () => setBranchAnchor(null)
+  const onSelectBranch = (b) => {
+    const id = b?._id || b?.id || ''
+    try {
+      // persist selection so other pages (and future loads) use it
+      if (id) localStorage.setItem('selectedBranch', id)
+      else localStorage.removeItem('selectedBranch')
+    } catch (err) {
+      // ignore storage errors
+    }
+    try {
+      window.dispatchEvent(new CustomEvent('branchSelected', { detail: { id, name: b?.name || '' } }))
+    } catch (err) {
+      // ignore
+    }
+    // do not force navigation away; allow user to stay on current page
+    handleCloseBranches()
+  }
+
+  useEffect(() => {
+    let mounted = true
+    try {
+      const payload = getUserFromToken()
+      if (!payload || payload.role !== 'customer') return
+      setIsCustomerLoggedIn(true)
+      const uid = payload.id
+      // Prefer stored image/name from login flow to avoid fetching full customers list
+      try {
+        const storedImage = localStorage.getItem('auth_user_image')
+        const storedName = localStorage.getItem('auth_user_name')
+        if (storedImage || storedName) {
+          if (storedImage) setCustomerAvatar(storedImage)
+          if (storedName) setCurrentUserName(storedName)
+          return
+        }
+      } catch (err) {
+        // ignore storage errors
+      }
+
+      // fallback: fetch single customer by id
+      (async () => {
+        try {
+          const me = await getCustomerAPI(uid)
+          if (!mounted) return
+          if (me) {
+            setCustomerAvatar(me.image || '')
+            setCurrentUserName(me.name || '')
+          }
+        } catch (err) {
+          // ignore
+        }
+      })()
+    } catch (err) {
+      // ignore
+    }
+    return () => { mounted = false }
+  }, [])
 
   return (
     <header className="home-nav">
@@ -62,13 +151,24 @@ export default function Header() {
             component={RouterLink}
             to="/products"
             className="nav-link"
-            aria-controls={anchorEl ? 'prod-menu' : undefined}
-            aria-haspopup="true"
-            onMouseEnter={handleOpen}
-            onMouseLeave={handleClose}
           >
             Sản phẩm
           </Button>
+          <Button className="nav-link" aria-controls={branchAnchor ? 'branch-menu' : undefined} aria-haspopup="true" onClick={handleOpenBranches}>
+            Chi nhánh
+          </Button>
+          <Menu
+            id="branch-menu"
+            anchorEl={branchAnchor}
+            open={Boolean(branchAnchor)}
+            onClose={handleCloseBranches}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+          >
+            {branches.map((b) => (
+              <MenuItem key={b._id || b.id} onClick={() => onSelectBranch(b)}>{b.name || (`Chi nhánh ${b._id || b.id}`)}</MenuItem>
+            ))}
+          </Menu>
           <Menu
             id="prod-menu"
             anchorEl={anchorEl}
@@ -97,9 +197,47 @@ export default function Header() {
               <ShoppingCartIcon sx={{ color: count > 0 ? '#f1c40f' : '#e67e22' }} />
             </Badge>
           </Button>
-          <Button className="nav-link" component={RouterLink} to="/login" variant="text">Đăng nhập</Button>
+          {/* If customer logged in show avatar with menu, otherwise show login link */}
+          {isCustomerLoggedIn ? (
+            <>
+              <IconButton onClick={handleOpenUser} size="small" sx={{ ml: 1 }} aria-label="account">
+                <Avatar src={customerAvatar} alt={currentUserName || 'Khách hàng'}>{(!customerAvatar && currentUserName) ? currentUserName[0] : ''}</Avatar>
+              </IconButton>
+              <Menu
+                id="user-menu"
+                anchorEl={userAnchor}
+                open={Boolean(userAnchor)}
+                onClose={handleCloseUser}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              >
+                <MenuItem onClick={() => { handleCloseUser(); navigate('/customer/profile') }}>
+                  <ListItemIcon>
+                    <PersonIcon fontSize='small' />
+                  </ListItemIcon>
+                  Hồ sơ
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={() => { handleCloseUser(); navigate('/customer/orders') }}>
+                  <ListItemIcon>
+                    <AllInboxIcon fontSize='small' />
+                  </ListItemIcon>
+                  Đơn hàng
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={() => { handleCloseUser(); localStorage.removeItem('auth_token'); localStorage.removeItem('auth_user_image'); localStorage.removeItem('auth_user_name'); navigate('/', { replace: true }) }}>
+                  <ListItemIcon>
+                    <LogoutIcon fontSize='small' />
+                  </ListItemIcon>
+                  Thoát
+                </MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <Button className="nav-link" component={RouterLink} to="/login" variant="text">Đăng nhập</Button>
+          )}
         </div>
       </div>
-    </header>
+    </header >
   )
 }
