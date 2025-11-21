@@ -8,6 +8,7 @@ import ProductDetail from '~/pages/ProductDetail'
 import Employees from '~/pages/Employees'
 import Cart from '~/pages/Cart'
 import Home from '~/pages/Home'
+import Introduce from '~/pages/Introduce/Introduce'
 import '~/styles/App.css'
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/products" element={<Shop />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/introduce" element={<Introduce />} />
         <Route path="/admin/products" element={<Products />} />
         <Route path="/employees" element={<Employees />} />
       </Routes>

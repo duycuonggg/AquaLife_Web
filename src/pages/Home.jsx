@@ -82,7 +82,7 @@ export default function Home() {
       </Box>
 
       {/* Categories */}
-      <Box sx={{ background: '#f0fbfb', py: 4 }}>
+      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Danh mục sản phẩm</Typography>
         </Box>
@@ -139,7 +139,7 @@ export default function Home() {
       </Box>
 
       {/* Feature icons */}
-      <Box sx={{ background: '#f0fbfb', py: 4 }}>
+      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
         </Box>
@@ -180,7 +180,7 @@ export default function Home() {
       {/* Testimonials + Newsletter */}
       <Box className="home-testimonials">
         <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Khách hàng của chúng tôi</Typography>
         </Box>
         <Grid container spacing={3} mb={4}>
           <Grid item xs={12} md={4}><Card><CardContent><Typography fontWeight={700}>Sarah Johnson</Typography><Typography variant="body2" color="text.secondary">Love the selection and fast delivery.</Typography></CardContent></Card></Grid>
@@ -189,7 +189,7 @@ export default function Home() {
         </Grid>
       </Box>
 
-      <Box sx={{ background: '#f0fbfb', py: 4 }}>
+      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4 }}>
         <Box className="home-newsletter" >
           <Box display="flex" alignItems="center" gap={2} mb={2} justifyContent={'center'} flexDirection={'column'}>
             <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10 }}>Hãy đăng ký ngay</Typography>
@@ -203,6 +203,7 @@ export default function Home() {
       </Box>
 
       {/* Footer */}
+      <Box sx={{ height: '1px', bgcolor: '#ecf0f1' }}></Box>
       <Footer />
     </Box>
   )
