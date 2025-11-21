@@ -59,6 +59,11 @@ export const getCustomerAPI = async (id) => {
   return response.data
 }
 
+export const getHeadquaterAPI = async () => {
+  const response = await client.get('/v1/headquater')
+  return response.data
+}
+
 export const updateCustomerAPI = async (id, data) => {
   const response = await client.put(`/v1/customers/${id}`, data)
   return response.data

@@ -19,7 +19,7 @@ import {
   People as PeopleIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
-import '~/styles/Admin.css'
+import './Admin.css'
 import { useNavigate } from 'react-router-dom'
 import { getBranchesAPI } from '~/apis/index'
 // product dialogs are handled inside the Products page
