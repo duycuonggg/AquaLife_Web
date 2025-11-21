@@ -109,7 +109,6 @@ export default function Introduce() {
         </Box>
       </Box>
 
-      <Box sx={{ height: '1px', bgcolor: '#ecf0f1' }}></Box>
       <Footer />
     </Box>
   )

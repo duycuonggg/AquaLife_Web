@@ -7,9 +7,13 @@ import { Link as RouterLink } from 'react-router-dom'
 import '~/styles/Shop.css'
 import Header from '~/components/Header'
 import Footer from '~/components/Footer'
+import Pagination from '@mui/material/Pagination'
+import Stack from '@mui/material/Stack'
 
 export default function Shop() {
   const [products, setProducts] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 12
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const [minPrice, setMinPrice] = useState('')
@@ -73,6 +77,56 @@ export default function Shop() {
     return () => window.removeEventListener('branchSelected', onBranch)
   }, [location.search, location.pathname, navigate])
 
+  // reset to first page whenever filters/search change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, typeFilter, minPrice, maxPrice, branchFilter])
+
+  // compute filtered products and pagination
+  const filteredProducts = (products || []).filter((p) => {
+    const q = searchTerm.trim().toLowerCase()
+    if (q) {
+      const inName = (p.name || '').toLowerCase().includes(q)
+      const inType = (p.type || '').toLowerCase().includes(q)
+      if (!inName && !inType) return false
+    }
+    // branch filtering
+    if (branchFilter) {
+      const id = String(branchFilter)
+      if (!p) return false
+      if (p.branchesId && String(p.branchesId) === id) {
+        // matched
+      } else if (Array.isArray(p.branchesId) && p.branchesId.map(x => String(x)).includes(id)) {
+        // matched
+      } else if (Array.isArray(p.stockByBranch)) {
+        if (!p.stockByBranch.find(sb => String(sb.branch || sb.branchesId || sb.branchId) === id)) return false
+      } else if (p.branchId && String(p.branchId) === id) {
+        // matched
+      } else {
+        return false
+      }
+    }
+    if (typeFilter) {
+      if ((p.type || '') !== typeFilter) return false
+    }
+    const price = Number(p.price) || 0
+    if (minPrice !== '') {
+      const min = Number(minPrice)
+      if (!Number.isNaN(min) && price < min) return false
+    }
+    if (maxPrice !== '') {
+      const max = Number(maxPrice)
+      if (!Number.isNaN(max) && price > max) return false
+    }
+    return true
+  })
+
+  const total = filteredProducts.length
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const safePage = Math.min(Math.max(1, currentPage), totalPages)
+  const startIndex = (safePage - 1) * pageSize
+  const pageItems = filteredProducts.slice(startIndex, startIndex + pageSize)
+
   // Shop page only renders product grid now; product detail moved to ProductDetail page
 
   // fallback: show shop grid (original behavior)
@@ -102,44 +156,7 @@ export default function Shop() {
         </Box>
 
         <Grid container spacing={3}>
-          {((products || []).filter((p) => {
-            const q = searchTerm.trim().toLowerCase()
-            if (q) {
-              const inName = (p.name || '').toLowerCase().includes(q)
-              const inType = (p.type || '').toLowerCase().includes(q)
-              if (!inName && !inType) return false
-            }
-            // branch filtering
-            if (branchFilter) {
-              const id = String(branchFilter)
-              // product may contain branchesId (single), branchesId array, or stockByBranch array
-              if (!p) return false
-              if (p.branchesId && String(p.branchesId) === id) {
-                // matched
-              } else if (Array.isArray(p.branchesId) && p.branchesId.map(x => String(x)).includes(id)) {
-                // matched
-              } else if (Array.isArray(p.stockByBranch)) {
-                if (!p.stockByBranch.find(sb => String(sb.branch || sb.branchesId || sb.branchId) === id)) return false
-              } else if (p.branchId && String(p.branchId) === id) {
-                // matched
-              } else {
-                return false
-              }
-            }
-            if (typeFilter) {
-              if ((p.type || '') !== typeFilter) return false
-            }
-            const price = Number(p.price) || 0
-            if (minPrice !== '') {
-              const min = Number(minPrice)
-              if (!Number.isNaN(min) && price < min) return false
-            }
-            if (maxPrice !== '') {
-              const max = Number(maxPrice)
-              if (!Number.isNaN(max) && price > max) return false
-            }
-            return true
-          })).map((p) => (
+          {pageItems.map((p) => (
             <Grid item xs={12} sm={6} md={3} key={p._id || p.id}>
               <Card className="shop-card">
                 <RouterLink to={`/products/${p._id || p.id}`} className="card-thumb-link">
@@ -160,7 +177,17 @@ export default function Shop() {
           ))}
         </Grid>
       </Box>
-      <Box sx={{ height: '1px', bgcolor: '#ecf0f1' }}></Box>
+
+      <Stack spacing={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
+        <Pagination
+          count={totalPages}
+          page={safePage}
+          onChange={(e, v) => setCurrentPage(v)}
+          variant="outlined"
+          color="primary"
+        />
+      </Stack>
+
       <Footer />
     </Box>
   )

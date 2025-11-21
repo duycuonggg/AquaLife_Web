@@ -203,7 +203,6 @@ export default function Home() {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ height: '1px', bgcolor: '#ecf0f1' }}></Box>
       <Footer />
     </Box>
   )

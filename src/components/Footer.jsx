@@ -9,13 +9,14 @@ import '~/styles/Home.css'
 export default function Footer() {
   return (
     <Box component="footer" className="site-footer">
+      <Box sx={{ height: '1px', bgcolor: '#ecf0f1', mb: 10 }}></Box>
       <Box className="footer-inner">
         <Box className="footer-col footer-brand">
           <Box className='brand'>
             <img src={logo} alt="AquaLife" className='brand-img' />
             <Typography fontWeight={700} className='brand-title'>AquaLife</Typography>
           </Box>
-          <Typography>Chạm vào từng khoảnh khắc <br /> sống động!</Typography>
+          <Typography>Chạm vào từng khoảnh khắc <br /> sống động <span style={{ color: 'red' }}>&#9825;</span></Typography>
         </Box>
 
         <Box className="footer-col">
