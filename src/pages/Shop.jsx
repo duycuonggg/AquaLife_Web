@@ -151,7 +151,7 @@ export default function Shop() {
                     <Typography className="mini-price" sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
                     <Button variant="contained" size="small" onClick={() => {
                       addToCart(p, 1)
-                      try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) {}
+                      try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) }
                     }}>Thêm vào giỏ</Button>
                   </Box>
                 </CardContent>

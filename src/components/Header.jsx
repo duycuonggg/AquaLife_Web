@@ -187,7 +187,7 @@ export default function Header() {
             )}
           </Menu>
 
-          <Button component={RouterLink} to="/about" className="nav-link">Giới thiệu</Button>
+          <Button component={RouterLink} to="/Introduce" className="nav-link">Giới thiệu</Button>
           <Button component={RouterLink} to="/contact" className="nav-link">Liên hệ</Button>
         </nav>
 
