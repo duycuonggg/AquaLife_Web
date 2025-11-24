@@ -12,8 +12,8 @@ import {
   Link
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import '~/styles/Register.css'
-import { registerAPI } from '../apis'
+import '~/pages/Register/Register.css'
+import { registerAPI } from '~/apis/index'
 import logo from '~/assets/logo.png'
 
 const Register = () => {

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField } from '@mui/material'
+import Pagination from '@mui/material/Pagination'
+import Stack from '@mui/material/Stack'
 import { getEmployeesAPI, deleteEmployeeAPI, deleteAllEmployeesAPI, getBranchesAPI } from '~/apis/index'
-import EmployeeForm from '~/components/EmployeeForm'
+import EmployeeForm from '~/pages/Admin/Employees/EmployeeForm/EmployeeForm'
 import { toast } from 'react-toastify'
 import { getUserRole } from '~/utils/auth'
 import Table from '@mui/material/Table'
@@ -15,6 +17,8 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 
 export default function Employees() {
   const [employees, setEmployees] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
   const [branches, setBranches] = useState([])
   // loading state reserved for potential future spinner UI
   const [searchTerm, setSearchTerm] = useState('')
@@ -49,6 +53,10 @@ export default function Employees() {
     fetch()
     fetchBranches()
   }, [])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm])
 
   const handleCreate = () => {
     setEditing(null)
@@ -119,27 +127,44 @@ export default function Employees() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {((employees || []).filter((emp) => {
-                if (!searchTerm) return true
-                const q = searchTerm.toLowerCase()
-                return (emp.name || '').toLowerCase().includes(q) || (emp.email || '').toLowerCase().includes(q) || (emp.role || '').toLowerCase().includes(q) || (emp.phone || '').toLowerCase().includes(q)
-              })).map((emp) => (
-                <TableRow key={emp._id || emp.id}>
-                  <TableCell>{(branches.find(b => b._id === emp.branchesId)?.name) || '-'}</TableCell>
-                  <TableCell>{emp.name}</TableCell>
-                  <TableCell>{emp.email}</TableCell>
-                  <TableCell>{emp.role}</TableCell>
-                  <TableCell>{emp.phone}</TableCell>
-                  <TableCell>••••••••</TableCell>
-                  <TableCell align="center">
-                    <Button size="small" onClick={() => handleEdit(emp)}>Sửa</Button>
-                    {isAdmin && <Button size="small" color="error" onClick={() => handleDelete(emp._id || emp.id)}>Xóa</Button>}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {(() => {
+                const filtered = (employees || []).filter((emp) => {
+                  if (!searchTerm) return true
+                  const q = searchTerm.toLowerCase()
+                  return (emp.name || '').toLowerCase().includes(q) || (emp.email || '').toLowerCase().includes(q) || (emp.role || '').toLowerCase().includes(q) || (emp.phone || '').toLowerCase().includes(q)
+                })
+                const total = filtered.length
+                const totalPages = Math.max(1, Math.ceil(total / pageSize))
+                const safePage = Math.min(Math.max(1, currentPage), totalPages)
+                const start = (safePage - 1) * pageSize
+                const pageItems = filtered.slice(start, start + pageSize)
+                return pageItems.map((emp) => (
+                  <TableRow key={emp._id || emp.id}>
+                    <TableCell>{(branches.find(b => b._id === emp.branchesId)?.name) || '-'}</TableCell>
+                    <TableCell>{emp.name}</TableCell>
+                    <TableCell>{emp.email}</TableCell>
+                    <TableCell>{emp.role}</TableCell>
+                    <TableCell>{emp.phone}</TableCell>
+                    <TableCell>••••••••</TableCell>
+                    <TableCell align="center">
+                      <Button size="small" onClick={() => handleEdit(emp)}>Sửa</Button>
+                      {isAdmin && <Button size="small" color="error" onClick={() => handleDelete(emp._id || emp.id)}>Xóa</Button>}
+                    </TableCell>
+                  </TableRow>
+                ))
+              })()}
             </TableBody>
           </Table>
         </TableContainer>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10, mb: 10 }}>
+          <Stack spacing={2}>
+            <Pagination count={Math.max(1, Math.ceil(((employees || []).filter((emp) => {
+              if (!searchTerm) return true
+              const q = searchTerm.toLowerCase()
+              return (emp.name || '').toLowerCase().includes(q) || (emp.email || '').toLowerCase().includes(q) || (emp.role || '').toLowerCase().includes(q) || (emp.phone || '').toLowerCase().includes(q)
+            })).length / pageSize))} page={currentPage} onChange={(e, v) => setCurrentPage(v)} color="primary" />
+          </Stack>
+        </Box>
       </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material'
+import Pagination from '@mui/material/Pagination'
+import Stack from '@mui/material/Stack'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import { getCustomersAPI, updateCustomerAPI, deleteCustomerAPI, deleteAllCustomersAPI, getBranchesAPI } from '~/apis/index'
 import Table from '@mui/material/Table'
@@ -14,6 +16,8 @@ import { getUserRole } from '~/utils/auth'
 
 export default function Customers() {
   const [customers, setCustomers] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
   const [branches, setBranches] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -49,6 +53,10 @@ export default function Customers() {
     fetch()
     fetchBranches()
   }, [])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm])
 
   const handleOpenEdit = (c) => {
     setEditing({ ...c })
@@ -132,27 +140,44 @@ export default function Customers() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {((customers || []).filter((c) => {
-              if (!searchTerm) return true
-              const q = searchTerm.toLowerCase()
-              return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
-            })).map((c) => (
-              <TableRow key={c._id || c.id}>
-                <TableCell>{(branches.find(b => (b._id || b.id) === c.branchesId)?.name) || '-'}</TableCell>
-                <TableCell>{c.name}</TableCell>
-                <TableCell>{c.email}</TableCell>
-                <TableCell>{c.phone}</TableCell>
-                <TableCell>{c.address}</TableCell>
-                <TableCell>••••••••</TableCell>
-                <TableCell align="center">
-                  <Button size="small" onClick={() => handleOpenEdit(c)}>Sửa</Button>
-                  {isAdmin && <Button size="small" color="error" onClick={() => handleDelete(c._id || c.id)}>Xóa</Button>}
-                </TableCell>
-              </TableRow>
-            ))}
+            {(() => {
+              const filtered = (customers || []).filter((c) => {
+                if (!searchTerm) return true
+                const q = searchTerm.toLowerCase()
+                return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
+              })
+              const total = filtered.length
+              const totalPages = Math.max(1, Math.ceil(total / pageSize))
+              const safePage = Math.min(Math.max(1, currentPage), totalPages)
+              const start = (safePage - 1) * pageSize
+              const pageItems = filtered.slice(start, start + pageSize)
+              return pageItems.map((c) => (
+                <TableRow key={c._id || c.id}>
+                  <TableCell>{(branches.find(b => (b._id || b.id) === c.branchesId)?.name) || '-'}</TableCell>
+                  <TableCell>{c.name}</TableCell>
+                  <TableCell>{c.email}</TableCell>
+                  <TableCell>{c.phone}</TableCell>
+                  <TableCell>{c.address}</TableCell>
+                  <TableCell>••••••••</TableCell>
+                  <TableCell align="center">
+                    <Button size="small" onClick={() => handleOpenEdit(c)}>Sửa</Button>
+                    {isAdmin && <Button size="small" color="error" onClick={() => handleDelete(c._id || c.id)}>Xóa</Button>}
+                  </TableCell>
+                </TableRow>
+              ))
+            })()}
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10, mb: 10 }}>
+        <Stack spacing={2}>
+          <Pagination count={Math.max(1, Math.ceil(((customers || []).filter((c) => {
+            if (!searchTerm) return true
+            const q = searchTerm.toLowerCase()
+            return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
+          })).length / pageSize))} page={currentPage} onChange={(e, v) => setCurrentPage(v)} color="primary" />
+        </Stack>
+      </Box>
 
       <Dialog open={editOpen} onClose={handleCloseEdit} fullWidth maxWidth="sm">
         <DialogTitle>Sửa khách hàng</DialogTitle>

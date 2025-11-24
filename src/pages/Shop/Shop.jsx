@@ -4,9 +4,9 @@ import { Box, Grid, Card, CardContent, Button, Typography, TextField, FormContro
 import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
 import { Link as RouterLink } from 'react-router-dom'
-import '~/styles/Shop.css'
-import Header from '~/components/Header'
-import Footer from '~/components/Footer'
+import '~/pages/Shop/Shop.css'
+import Header from '~/components/Header/Header'
+import Footer from '~/components/Footer/Footer'
 import Pagination from '@mui/material/Pagination'
 import Stack from '@mui/material/Stack'
 
@@ -178,7 +178,7 @@ export default function Shop() {
         </Grid>
       </Box>
 
-      <Stack spacing={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2 }}>
+      <Stack spacing={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 10, mb: 10 }}>
         <Pagination
           count={totalPages}
           page={safePage}
