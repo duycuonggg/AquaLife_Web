@@ -1,5 +1,5 @@
 .shop-page { padding-bottom: 12px; }
-.shop-card { border-radius: 12px; overflow: hidden; box-shadow: 0 12px 30px rgba(16,24,32,0.08); }
+.shop-card { border-radius: 12px; overflow: hidden; box-shadow: 0 12px 30px rgba(16,24,32,0.08); height: 100%}
 .card-thumb { width: 100%; height: 180px; background-size: cover; background-position: center; display: block; }
 .card-thumb-link { display: block; }
 .card-name { text-align: center; text-transform: lowercase; font-weight: 700; margin-top: 12px; }

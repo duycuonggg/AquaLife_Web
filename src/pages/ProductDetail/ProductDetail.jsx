@@ -4,9 +4,9 @@ import { Box, Grid, Card, CardContent, Button, Typography, TextField, IconButton
 import { getProductAPI, getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
 import { Link as RouterLink } from 'react-router-dom'
-import '~/styles/ProductDetail.css'
-import Header from '~/components/Header'
-import Footer from '~/components/Footer'
+import '~/pages/ProductDetail/ProductDetail.css'
+import Header from '~/components/Header/Header'
+import Footer from '~/components/Footer/Footer'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 

@@ -12,8 +12,8 @@ import {
   Link
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import '../styles/login.css'
-import { loginAPI } from '../apis'
+import '~/pages/Login/Login.css'
+import { loginAPI } from '~/apis/index'
 import { getUserFromToken } from '~/utils/auth'
 import logo from '~/assets/logo.png'
 

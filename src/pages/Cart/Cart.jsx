@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Card, CardContent, Button, TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from '@mui/material'
-import Header from '~/components/Header'
-import Footer from '~/components/Footer'
+import Header from '~/components/Header/Header'
+import Footer from '~/components/Footer/Footer'
 import { getCart, removeFromCart, updateQty, clearCart } from '~/utils/cart'
 
 export default function Cart() {

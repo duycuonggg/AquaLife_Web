@@ -3,7 +3,7 @@ import { Button, Menu, MenuItem, Badge, Avatar, IconButton, Divider, ListItemIco
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Link as RouterLink } from 'react-router-dom'
 import logo from '~/assets/logo.png'
-import '~/styles/Home.css'
+import '~/components/Header/Header.css'
 import { getProductsAPI } from '~/apis/index'
 import { getBranchesAPI, getCustomerAPI } from '~/apis/index'
 import { cartCount } from '~/utils/cart'
@@ -147,15 +147,15 @@ export default function Header() {
 
         <nav className="center" aria-label="main navigation">
           <Button component={RouterLink} to="/" className="nav-link">Trang chủ</Button>
+          <Button className="nav-link" aria-controls={branchAnchor ? 'branch-menu' : undefined} aria-haspopup="true" onClick={handleOpenBranches}>
+            Chi nhánh
+          </Button>
           <Button
             component={RouterLink}
             to="/products"
             className="nav-link"
           >
             Sản phẩm
-          </Button>
-          <Button className="nav-link" aria-controls={branchAnchor ? 'branch-menu' : undefined} aria-haspopup="true" onClick={handleOpenBranches}>
-            Chi nhánh
           </Button>
           <Menu
             id="branch-menu"

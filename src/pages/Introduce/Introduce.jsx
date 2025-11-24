@@ -3,10 +3,10 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
 import PublicIcon from '@mui/icons-material/Public'
-import Header from '~/components/Header'
-import Footer from '~/components/Footer'
+import Header from '~/components/Header/Header'
+import Footer from '~/components/Footer/Footer'
 import '~/pages/Introduce/Introduce.css'
-const introduceImg = new URL('~/assets/ChatGPT Image Nov 21, 2025, 03_35_37 PM.png', import.meta.url).href
+const introduceImg = new URL('~/assets/Introduce.png', import.meta.url).href
 
 
 const team = [
@@ -20,7 +20,7 @@ export default function Introduce() {
     <Box>
       <Header />
 
-      <Box className="introduce-content container">
+      <Box className="introduce-content">
         {/* Hàng tính năng */}
         <Box className="introduce-hero">
           <Box className="introduce-hero-inner">

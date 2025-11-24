@@ -4,7 +4,7 @@ import logo from '~/assets/logo.png'
 import facebook from '~/assets/facebook.png'
 import instagram from '~/assets/instagram.png'
 import tiktok from '~/assets/tiktok.png'
-import '~/styles/Home.css'
+import '~/components/Footer/Footer.css'
 
 export default function Footer() {
   return (

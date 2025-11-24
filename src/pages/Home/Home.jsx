@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react'
 import { Box, Button, Typography, Grid, Card, CardContent, CardActions, TextField } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { getProductsAPI } from '~/apis/index'
+import { addToCart } from '~/utils/cart'
 // logo and shopping cart icon unused here (Header renders brand/cart)
-import '~/styles/Home.css'
-const heroImg = new URL('../assets/ChatGPT Image Nov 11, 2025, 10_38_32 PM.png', import.meta.url).href
+import '~/pages/Home/Home.css'
+const heroImg = new URL('~/assets/Banner.png', import.meta.url).href
 import LocalShippingIcon from '@mui/icons-material/LocalShipping'
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
 import SupportAgentIcon from '@mui/icons-material/SupportAgent'
 import LoopIcon from '@mui/icons-material/Loop'
-import Footer from '~/components/Footer'
-import Header from '~/components/Header'
+import Footer from '~/components/Footer/Footer'
+import Header from '~/components/Header/Header'
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -119,27 +120,28 @@ export default function Home() {
             return (p.name || '').toLowerCase().includes(q) || (p.type || '').toLowerCase().includes(q)
           }).map((p) => (
             <Grid item xs={6} sm={4} md={3} key={p._id || p.id}>
-              <Box
-                className="featured-mini"
-                component={RouterLink}
-                to={`/products/${p._id || p.id}`}
-                sx={{ textAlign: 'center', p: 1, textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
-              >
-                {p.imageUrl ? (
-                  <Box className="mini-thumb" sx={{ backgroundImage: `url(${p.imageUrl})` }} />
-                ) : (
-                  <Box className="mini-thumb" sx={{ background: '#f2f2f2' }} />
-                )}
-                <Typography className="mini-name" sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
-                <Typography className="mini-price" sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
-              </Box>
+              <Card className="shop-card">
+                <RouterLink to={`/products/${p._id || p.id}`} className="card-thumb-link">
+                  <div className="card-thumb" style={{ backgroundImage: `url(${p.imageUrl || ''})` }} />
+                </RouterLink>
+                <CardContent>
+                  <Typography className="mini-name" sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
+                  <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
+                    <Typography className="mini-price" sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
+                    <Button variant="contained" size="small" onClick={() => {
+                      addToCart(p, 1)
+                      try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) }
+                    }}>Thêm vào giỏ</Button>
+                  </Box>
+                </CardContent>
+              </Card>
             </Grid>
           ))}
         </Grid>
       </Box>
 
       {/* Feature icons */}
-      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4 }}>
+      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4, mt: 10, mb: 10 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
         </Box>
@@ -195,7 +197,7 @@ export default function Home() {
             <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10 }}>Hãy đăng ký ngay</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 10, textAlign: 'center' }}>Nhận các mẹo chăm sóc bể cá chuyên nghiệp, ưu đãi độc quyền và sản phẩm mới.</Typography>
           </Box>
-          <Box className="subscribe-form" display="flex" gap={2}>
+          <Box className="subscribe-form" display="flex" gap={2} >
             <TextField placeholder="Nhập email của bạn" fullWidth />
             <Button variant="contained">Gửi</Button>
           </Box>

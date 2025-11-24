@@ -1,37 +1,3 @@
-.home-nav {
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-.home-nav .container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.home-nav .left,
-.home-nav .center,
-.home-nav .right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.home-nav .center {
-  flex: 1;
-  justify-content: center;
-}
-.home-nav .left { justify-content: flex-start; }
-.home-nav .right { justify-content: flex-end; }
-.nav-link {
-  color: #000 !important;
-  text-transform: none;
-  font-weight: 500;
-}
-.nav-link:hover { color: #0b8798 }
-.brand { display:flex; align-items:center; gap:12px; }
-.brand img { width:44px; height:44px; }
-.brand-title { color: #0b8798; font-weight:700; }
 .home-hero { width:100%; background-size:cover; background-position:center center; background-repeat:no-repeat; height:420px; position:relative; }
 @media (min-width: 900px) { .home-hero { height:680px; } }
 .hero-slogan {
@@ -95,20 +61,6 @@
 
 /* Newsletter center styles */
 .home-newsletter .subscribe-form { max-width: 700px; margin: 0 auto; display: flex; }
-
-/* Footer styles */
-.site-footer { background: transparent; color: #0b2f3a; padding: 12px 0 0; position: relative; }
-.site-footer .footer-inner { max-width: 1100px; margin: 0 auto; padding: 12px 12px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 24px; align-items: start; }
-.site-footer .footer-col { line-height: 1.8; text-decoration: none; }
-.site-footer .footer-brand img { border-radius: 8px; }
-.site-footer .social-box { width: 40px; height: 40px; background: rgba(0,0,0,0.04); display:flex; align-items:center; justify-content:center; border-radius:8px; }
-.site-footer .footer-bottom { text-align:center; padding: 10px 12px; font-size: 15px; font-weight: 600; background-color: #9ecff0; color: #064b61; margin: 16px 0 0; position: static; width: 100%; }
-.site-footer .footer-link { text-decoration: none; color: inherit; }
-
-@media (max-width: 900px) {
-  .site-footer .footer-inner { grid-template-columns: 1fr; }
-  .hero-slogan { left: 24px; top: 22%; max-width: 80%; }
-}
 
 .section-title {
   font-weight: 700; 

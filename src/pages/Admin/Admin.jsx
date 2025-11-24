@@ -15,7 +15,6 @@ import {
 import {
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
-  Storefront as StorefrontIcon,
   People as PeopleIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
@@ -25,9 +24,9 @@ import { getBranchesAPI } from '~/apis/index'
 // product dialogs are handled inside the Products page
 import logo from '~/assets/logo.png'
 import LogoutIcon from '@mui/icons-material/Logout'
-import Products from '~/pages/Products'
-import Employees from '~/pages/Employees'
-import Customers from '~/pages/Customers'
+import Products from '~/pages/Admin/Products/Products'
+import Customers from '~/pages/Admin/Customers/Customers'
+import Employees from '~/pages/Admin/Employees/Employees'
 
 export default function Admin() {
   const [section, setSection] = useState('dashboard')
@@ -88,14 +87,13 @@ export default function Admin() {
               onChange={(e, v) => {
                 setTabIndex(v)
                 // internal keys (English) used by section comparisons; labels remain Vietnamese
-                const mapping = ['dashboard', 'products', 'branches', 'employees', 'customers']
+                const mapping = ['dashboard', 'products', 'employees', 'customers']
                 setSection(mapping[v])
               }}
               sx={{ mt: 1 }}
             >
               <Tab icon={<DashboardIcon />} iconPosition="start" label="Bảng điều khiển" />
               <Tab icon={<InventoryIcon />} iconPosition="start" label="Sản phẩm" />
-              <Tab icon={<StorefrontIcon />} iconPosition="start" label="Chi nhánh" />
               <Tab icon={<PeopleIcon />} iconPosition="start" label="Nhân viên" />
               <Tab icon={<PersonIcon />} iconPosition="start" label="Khách hàng" />
             </Tabs>
@@ -172,30 +170,6 @@ export default function Admin() {
         {section === 'products' && (
           <Box>
             <Products />
-          </Box>
-        )}
-
-        {section === 'branches' && (
-          <Box>
-            <Typography variant="h5" gutterBottom>Branch Management</Typography>
-            <Grid container spacing={3}>
-              {branches.length > 0 ? branches.map((b) => (
-                <Grid item xs={12} sm={6} md={4} key={b._id || b.id}>
-                  <Card className="branch-card-grid">
-                    <Box className="branch-grid-media" style={{ backgroundImage: `url(${b.image})` }} />
-                    <CardContent>
-                      <Typography variant="h6">{b.name}</Typography>
-                      <Typography variant="body2" color="textSecondary">{b.address}</Typography>
-                      <Box mt={2}>
-                        <Typography variant="body2">Manager: {b.manager}</Typography>
-                        <Typography variant="body2">{b.phone}</Typography>
-                        <Typography variant="body2">{b.email}</Typography>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              )) : null}
-            </Grid>
           </Box>
         )}
 
