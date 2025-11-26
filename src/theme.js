@@ -3,7 +3,7 @@ import { experimental_extendTheme as extendTheme } from '@mui/material/styles'
 const theme = extendTheme({
   palette: {
     primary: {
-      main: '#0693a6'
+      main: '#0b8798'
     }
   },
   // chuyển về chữ bình thường (viết hoa chữ cái đầu)
@@ -21,7 +21,7 @@ const theme = extendTheme({
           textTransform: 'none',
           color: '#000000',
           '&.Mui-selected': {
-            color: '#0693a6' // màu khi được chọn
+            color: '#0b8798' // màu khi được chọn
           }
         }
       }

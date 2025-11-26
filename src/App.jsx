@@ -11,6 +11,7 @@ import Home from '~/pages/Home/Home'
 import Introduce from '~/pages/Introduce/Introduce'
 import Contact from '~/pages/Contact/Contact'
 import Profile from '~/pages/Profile/Profile'
+import CustomerOrders from '~/pages/CustomerOrders/CustomerOrders'
 import './App.css'
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/introduce" element={<Introduce />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/customer/profile" element={<Profile />} />
+        <Route path="/customer/orders" element={<CustomerOrders />} />
         <Route path="/admin/products" element={<Products />} />
         <Route path="/employees" element={<Employees />} />
       </Routes>
