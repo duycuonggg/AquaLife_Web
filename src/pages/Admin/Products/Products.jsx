@@ -129,7 +129,7 @@ export default function ProductsPage() {
         {loading && <Box mb={2}><Typography>Đang tải sản phẩm...</Typography></Box>}
         <TableContainer component={Paper} sx={{ border: '1px solid #0b8798' }}>
           <Table size="small">
-            <TableHead sx={{ backgroundColor: '#0693a6' }}>
+            <TableHead sx={{ backgroundColor: '#0b8798' }}>
               <TableRow>
                 <TableCell>Chi nhánh</TableCell>
                 <TableCell>Tên</TableCell>

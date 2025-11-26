@@ -3,7 +3,7 @@
 .site-footer .footer-col { line-height: 1.8; text-decoration: none; }
 .site-footer .footer-brand img { border-radius: 8px; }
 .site-footer .social-box { width: 40px; height: 40px; background: rgba(0,0,0,0.04); display:flex; align-items:center; justify-content:center; border-radius:8px; }
-.site-footer .footer-bottom { text-align:center; padding: 10px 12px; font-size: 15px; font-weight: 600; background-color: #9ecff0; color: #064b61; margin: 16px 0 0; position: static; width: 100%; }
+.site-footer .footer-bottom { text-align:center; padding: 10px 12px; font-size: 15px; font-weight: 600; background-color: #0b8798; color: #064b61; margin: 16px 0 0; position: static; width: 100%; }
 .site-footer .footer-link { text-decoration: none; color: inherit; }
 
 @media (max-width: 900px) {
