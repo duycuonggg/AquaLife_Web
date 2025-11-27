@@ -3,12 +3,15 @@ import { Box, Typography, Grid, Card, CardContent, Button, TextField, Radio, Rad
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
 import { getCart, removeFromCart, updateQty, clearCart } from '~/utils/cart'
+import { createOrderAPI, createOrderDetailAPI } from '~/apis/index'
+import { getUserFromToken } from '~/utils/auth'
+import { useNavigate } from 'react-router-dom'
 
 export default function Cart() {
   const [items, setItems] = useState([])
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
-  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerAddress, setCustomerAddress] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cash')
 
   useEffect(() => {
@@ -35,23 +38,64 @@ export default function Cart() {
 
   const total = items.reduce((s, it) => s + (it.price || 0) * (it.qty || 0), 0)
 
+  const navigate = useNavigate()
+
   const onCheckout = async () => {
     if (items.length === 0) return alert('Giỏ hàng đang trống')
     if (!customerName || customerName.trim().length < 2) return alert('Vui lòng nhập tên khách hàng')
     if (!customerPhone || customerPhone.trim().length < 7) return alert('Vui lòng nhập số điện thoại hợp lệ')
     if (!paymentMethod) return alert('Vui lòng chọn phương thức thanh toán')
-
-    // For now, simulate successful payment / order creation on frontend
+    // Persist order to backend
     try {
-      // simulate network/save delay
-      await new Promise((res) => setTimeout(res, 600))
+      const user = getUserFromToken()
+      if (!user || user.role !== 'customer') {
+        return alert('Vui lòng đăng nhập tài khoản khách hàng để đặt hàng')
+      }
+
+      const branchId = localStorage.getItem('selectedBranch') || ''
+      if (!branchId) return alert('Vui lòng chọn chi nhánh trước khi đặt hàng')
+
+      const orderPayload = {
+        customersId: user.id,
+        branchesId: branchId,
+        totalPrice: total,
+        status: 'Đang chờ',
+        orderDate: new Date().toISOString(),
+        deliveryAddress: customerAddress || '',
+        note: ''
+      }
+
+      const created = await createOrderAPI(orderPayload)
+
+      // determine created order id (server may return insertedId or created doc)
+      const orderId = created?.insertedId || created?._id || created?.id || (created && created?.ops && created.ops[0]?._id)
+      if (!orderId) {
+        console.error('Unexpected createOrder response', created)
+        throw new Error('Không lấy được id đơn hàng từ server')
+      }
+
+      // create order detail records
+      await Promise.all(items.map((it) => {
+        const detail = {
+          ordersId: orderId,
+          productsId: it.id,
+          quantity: it.qty,
+          priceAtOrder: it.price,
+          subtotal: (it.price || 0) * (it.qty || 0)
+        }
+        return createOrderDetailAPI(detail)
+      }))
+
+      // success
       clearCart()
       setItems([])
       setCustomerName('')
       setCustomerPhone('')
-      setCustomerEmail('')
+      setCustomerAddress('')
       setPaymentMethod('cash')
       alert('Thanh toán thành công. Cảm ơn bạn đã mua hàng!')
+      try { navigate(`/orders/${orderId}`) } catch (e) { /* ignore */ }
+
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Checkout failed', err)
@@ -63,7 +107,7 @@ export default function Cart() {
     <Box>
       <Header />
       <Box sx={{ maxWidth: 1100, mx: 'auto', p: 3 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>Giỏ hàng</Typography>
+        <Typography variant="h5" sx={{ mb: 10, mt: 10 }}>Giỏ hàng</Typography>
         {items.length === 0 ? (
           <Typography>Giỏ hàng trống.</Typography>
         ) : (
@@ -85,7 +129,7 @@ export default function Cart() {
                 </Card>
               ))}
             </Grid>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={8} mt={5} mb={20}>
               <Card>
                 <CardContent>
                   <Typography sx={{ fontWeight: 700 }}>Tổng</Typography>
@@ -93,7 +137,7 @@ export default function Cart() {
 
                   <TextField label="Tên khách hàng" fullWidth value={customerName} onChange={(e) => setCustomerName(e.target.value)} sx={{ mt: 2 }} />
                   <TextField label="Số điện thoại" fullWidth value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} sx={{ mt: 1 }} />
-                  <TextField label="Email (tuỳ chọn)" fullWidth value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} sx={{ mt: 1 }} />
+                  <TextField label="Địa chỉ" fullWidth value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} sx={{ mt: 1 }} />
 
                   <FormControl sx={{ mt: 2 }} component="fieldset">
                     <FormLabel component="legend">Phương thức thanh toán</FormLabel>
@@ -104,8 +148,8 @@ export default function Cart() {
                     </RadioGroup>
                   </FormControl>
 
-                  <Button variant="contained" sx={{ mt: 2 }} onClick={onCheckout}>Thanh toán</Button>
                 </CardContent>
+                <Button variant="contained" sx={{ mt: 5, mb: 5, ml: 2 }} onClick={onCheckout}>Thanh toán</Button>
               </Card>
             </Grid>
           </Grid>

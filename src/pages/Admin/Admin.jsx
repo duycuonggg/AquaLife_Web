@@ -60,7 +60,7 @@ export default function Admin() {
       <AppBar position="fixed" className="admin-appbar">
         <Toolbar>
           <img src={logo} alt="AquaLife Logo" className="logo-icon" />
-          <Typography variant="h6" className="appbar-title">AquaLife</Typography>
+          <Typography  className="appbar-title">AquaLife</Typography>
           <Box sx={{ flex: 1 }} />
           <Button
             className="appbar-title"
