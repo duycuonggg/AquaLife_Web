@@ -124,7 +124,17 @@ export const getCustomerOrdersAPI = async () => {
   return response.data
 }
 
+export const getOrderAPI = async (id) => {
+  const response = await client.get(`/v1/orders/${id}`)
+  return response.data
+}
+
 export const createOrderDetailAPI = async (data) => {
   const response = await client.post('/v1/order-details', data)
+  return response.data
+}
+
+export const getOrderDetailsAPI = async (orderId) => {
+  const response = await client.get('/v1/order-details', { params: { orderId } })
   return response.data
 }
