@@ -9,7 +9,7 @@ import '~/components/Footer/Footer.css'
 export default function Footer() {
   return (
     <Box component="footer" className="site-footer">
-      <Box sx={{ height: '1px', bgcolor: '#ecf0f1', mb: 10 }}></Box>
+      <Box sx={{ height: '0px', bgcolor: '#ecf0f1', mb: 10 }}></Box>
       <Box className="footer-inner">
         <Box className="footer-col footer-brand">
           <Box className='brand'>

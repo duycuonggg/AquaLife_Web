@@ -113,7 +113,7 @@ export default function ProductsPage() {
 
   return (
     <Box p={3}>
-      <Box display="flex" alignItems="center" mb={2} gap={2} >
+      <Box display="flex" alignItems="center" mb={5} gap={2} mt={3} >
         <h2>Quản lý sản phẩm</h2>
         <TextField size="small" placeholder="Tìm kiếm sản phẩm..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ minWidth: 260 }} />
         <Box sx={{ flex: 1 }} />
@@ -131,11 +131,12 @@ export default function ProductsPage() {
           <Table size="small">
             <TableHead sx={{ backgroundColor: '#0b8798' }}>
               <TableRow>
-                <TableCell>Chi nhánh</TableCell>
-                <TableCell>Tên</TableCell>
-                <TableCell>Loại</TableCell>
-                <TableCell>Giá</TableCell>
-                <TableCell>Số lượng</TableCell>
+                <TableCell align="center">Chi nhánh</TableCell>
+                <TableCell align="center">Tên</TableCell>
+                <TableCell align="center">Ảnh</TableCell>
+                <TableCell align="center">Loại</TableCell>
+                <TableCell align="center">Giá</TableCell>
+                <TableCell align="center">Số lượng</TableCell>
                 <TableCell align="center">Hành động</TableCell>
               </TableRow>
             </TableHead>
@@ -153,11 +154,20 @@ export default function ProductsPage() {
                 const pageItems = filtered.slice(start, start + pageSize)
                 return pageItems.map((p) => (
                   <TableRow key={p._id || p.id}>
-                    <TableCell>{branches.find(b => b._id === p.branchesId)?.name || '-'}</TableCell>
-                    <TableCell>{p.name}</TableCell>
-                    <TableCell>{p.type}</TableCell>
-                    <TableCell>{p.price}</TableCell>
-                    <TableCell>{p.quantity}</TableCell>
+                    <TableCell align="center">{branches.find(b => b._id === p.branchesId)?.name || '-'}</TableCell>
+                    <TableCell align="center">{p.name}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center' }}>
+                        {p.imageUrl ? (
+                          <Box sx={{ width: 64, height: 48, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${p.imageUrl})`, borderRadius: 1 }} />
+                        ) : (
+                          <Box sx={{ width: 64, height: 48, background: '#f0f0f0', borderRadius: 1 }} />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell align="center">{p.type}</TableCell>
+                    <TableCell align="center">{p.price}</TableCell>
+                    <TableCell align="center">{p.quantity}</TableCell>
                     <TableCell align="center">
                       <Button size="small" onClick={() => handleEdit(p)}>Sửa</Button>
                       <Button size="small" color="error" onClick={() => handleDelete(p)}>Xóa</Button>

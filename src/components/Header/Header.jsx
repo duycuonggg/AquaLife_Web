@@ -9,9 +9,9 @@ import { getBranchesAPI, getCustomerAPI } from '~/apis/index'
 import { cartCount } from '~/utils/cart'
 import { getUserFromToken } from '~/utils/auth'
 import { useNavigate } from 'react-router-dom'
-import LogoutIcon from '@mui/icons-material/Logout'
-import PersonIcon from '@mui/icons-material/Person'
-import AllInboxIcon from '@mui/icons-material/AllInbox'
+import user from '~/assets/user.png'
+import order from '~/assets/order.png'
+import checkout from '~/assets/checkout.png'
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -213,21 +213,21 @@ export default function Header() {
               >
                 <MenuItem onClick={() => { handleCloseUser(); navigate('/customer/profile') }}>
                   <ListItemIcon>
-                    <PersonIcon fontSize='small' />
+                    <img src={user} alt="User" style={{ width: 20, height: 20 }} />
                   </ListItemIcon>
                   Hồ sơ
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => { handleCloseUser(); navigate('/customer/orders') }}>
                   <ListItemIcon>
-                    <AllInboxIcon fontSize='small' />
+                    <img src={order} alt="Orders" style={{ width: 20, height: 20 }} />
                   </ListItemIcon>
                   Đơn hàng
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={() => { handleCloseUser(); localStorage.removeItem('auth_token'); localStorage.removeItem('auth_user_image'); localStorage.removeItem('auth_user_name'); navigate('/', { replace: true }) }}>
                   <ListItemIcon>
-                    <LogoutIcon fontSize='small' />
+                    <img src={checkout} alt="Logout" style={{ width: 20, height: 20 }} />
                   </ListItemIcon>
                   Thoát
                 </MenuItem>

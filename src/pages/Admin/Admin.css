@@ -6,7 +6,7 @@
 
 .admin-appbar {
   z-index: 1400;
-  background-color: #FFFFFF !important;
+  background: linear-gradient(180deg, #dbe8e8, #ffffff) !important;
 }
 
 .menu-button {

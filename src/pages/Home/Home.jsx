@@ -6,12 +6,12 @@ import { addToCart } from '~/utils/cart'
 // logo and shopping cart icon unused here (Header renders brand/cart)
 import '~/pages/Home/Home.css'
 const heroImg = new URL('~/assets/Banner.png', import.meta.url).href
-import LocalShippingIcon from '@mui/icons-material/LocalShipping'
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
-import SupportAgentIcon from '@mui/icons-material/SupportAgent'
-import LoopIcon from '@mui/icons-material/Loop'
 import Footer from '~/components/Footer/Footer'
 import Header from '~/components/Header/Header'
+import productreturn from '~/assets/productreturn.png'
+import delivery from '~/assets/delivery.png'
+import helpdesk from '~/assets/helpdesk.png'
+import favorites from '~/assets/favorites.png'
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -69,7 +69,7 @@ export default function Home() {
   ]
 
   return (
-    <Box>
+    <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       {/* Navbar (shared) */}
       <Header />
 
@@ -83,7 +83,7 @@ export default function Home() {
       </Box>
 
       {/* Categories */}
-      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Danh mục sản phẩm</Typography>
         </Box>
@@ -141,7 +141,7 @@ export default function Home() {
       </Box>
 
       {/* Feature icons */}
-      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4, mt: 10, mb: 10 }}>
+      <Box sx={{ py: 4, mt: 10, mb: 10 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
         </Box>
@@ -149,28 +149,28 @@ export default function Home() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
               <Box textAlign="center">
-                <LocalShippingIcon sx={{ fontSize: 48, mb: 1, color: '#e67e22' }} />
+                <img src={delivery} alt="Delivery" style={{ width: 80, height: 80, marginBottom: 8 }} />
                 <Typography fontWeight={700}>Miễn phí vận chuyển</Typography>
                 <Typography variant="caption">Đơn hàng từ 500k</Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={3}>
               <Box textAlign="center">
-                <WorkspacePremiumIcon sx={{ fontSize: 48, mb: 1, color: '#d35400' }} />
+                <img src={favorites} alt="Quality Assurance" style={{ width: 80, height: 80, marginBottom: 8 }} />
                 <Typography fontWeight={700}>Đảm bảo chất lượng</Typography>
                 <Typography variant="caption">Của hàng uy tín</Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={3}>
               <Box textAlign="center">
-                <SupportAgentIcon sx={{ fontSize: 48, mb: 1, color: '#f39c12' }} />
+                <img src={helpdesk} alt="Support" style={{ width: 80, height: 80, marginBottom: 8 }} />
                 <Typography fontWeight={700}>Chuyên gia hỗ trợ</Typography>
                 <Typography variant="caption">24/7</Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={3}>
               <Box textAlign="center">
-                <LoopIcon sx={{ fontSize: 48, mb: 1, color: '#f1c40f' }} />
+                <img src={productreturn} alt="Return" style={{ width: 80, height: 80, marginBottom: 8 }} />
                 <Typography fontWeight={700}>Dễ dàng trả hàng</Typography>
                 <Typography variant="caption">30 ngày</Typography>
               </Box>
@@ -191,7 +191,7 @@ export default function Home() {
         </Grid>
       </Box>
 
-      <Box sx={{ background: 'linear-gradient(180deg,#f7fbfb,#ffffff)', py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Box className="home-newsletter" >
           <Box display="flex" alignItems="center" gap={2} mb={2} justifyContent={'center'} flexDirection={'column'}>
             <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10 }}>Hãy đăng ký ngay</Typography>

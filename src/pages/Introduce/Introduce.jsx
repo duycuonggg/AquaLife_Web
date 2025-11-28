@@ -17,7 +17,7 @@ const team = [
 
 export default function Introduce() {
   return (
-    <Box>
+    <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
 
       <Box className="introduce-content">

@@ -18,15 +18,17 @@ import {
   People as PeopleIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
 import './Admin.css'
 import { useNavigate } from 'react-router-dom'
 import { getBranchesAPI } from '~/apis/index'
 // product dialogs are handled inside the Products page
 import logo from '~/assets/logo.png'
-import LogoutIcon from '@mui/icons-material/Logout'
 import Products from '~/pages/Admin/Products/Products'
 import Customers from '~/pages/Admin/Customers/Customers'
 import Employees from '~/pages/Admin/Employees/Employees'
+import AdminOrders from '~/pages/Admin/AdminOrders/AdminOrders.jsx'
+import checkout from '~/assets/checkout.png'
 
 export default function Admin() {
   const [section, setSection] = useState('dashboard')
@@ -60,11 +62,11 @@ export default function Admin() {
       <AppBar position="fixed" className="admin-appbar">
         <Toolbar>
           <img src={logo} alt="AquaLife Logo" className="logo-icon" />
-          <Typography  className="appbar-title">AquaLife</Typography>
+          <Typography className="appbar-title">AquaLife</Typography>
           <Box sx={{ flex: 1 }} />
           <Button
             className="appbar-title"
-            startIcon={<LogoutIcon />}
+            startIcon={<img src={checkout} alt="Checkout" style={{ width: 24, height: 24 }} />}
             onClick={() => {
               try {
                 localStorage.removeItem('auth_token')
@@ -87,13 +89,14 @@ export default function Admin() {
               onChange={(e, v) => {
                 setTabIndex(v)
                 // internal keys (English) used by section comparisons; labels remain Vietnamese
-                const mapping = ['dashboard', 'products', 'employees', 'customers']
+                const mapping = ['dashboard', 'products', 'orders', 'employees', 'customers']
                 setSection(mapping[v])
               }}
               sx={{ mt: 1 }}
             >
               <Tab icon={<DashboardIcon />} iconPosition="start" label="Bảng điều khiển" />
               <Tab icon={<InventoryIcon />} iconPosition="start" label="Sản phẩm" />
+              <Tab icon={<ReceiptLongIcon />} iconPosition="start" label="Đơn hàng" />
               <Tab icon={<PeopleIcon />} iconPosition="start" label="Nhân viên" />
               <Tab icon={<PersonIcon />} iconPosition="start" label="Khách hàng" />
             </Tabs>
@@ -170,6 +173,12 @@ export default function Admin() {
         {section === 'products' && (
           <Box>
             <Products />
+          </Box>
+        )}
+
+        {section === 'orders' && (
+          <Box>
+            <AdminOrders />
           </Box>
         )}
 

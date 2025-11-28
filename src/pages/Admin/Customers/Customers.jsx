@@ -116,7 +116,7 @@ export default function Customers() {
 
   return (
     <Box p={3}>
-      <Box display="flex" alignItems="center" mb={2} gap={2}>
+      <Box display="flex" alignItems="center" mb={5} gap={2} mt={3}>
         <h2>Quản lý khách hàng</h2>
         <TextField size="small" placeholder="Tìm kiếm khách hàng..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ minWidth: 260 }} />
         <Box sx={{ flex: 1 }} />
@@ -126,16 +126,15 @@ export default function Customers() {
         {isAdmin && <Button variant="outlined" color="error" onClick={handleDeleteAll} sx={{ ml: 1 }} disabled={loading}>Xóa tất cả</Button>}
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ border: '1px solid #0b8798' }}>
         <Table size="small">
-          <TableHead>
+          <TableHead sx={{ backgroundColor: '#0b8798' }}>
             <TableRow>
-              <TableCell>Chi nhánh</TableCell>
-              <TableCell>Tên</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Số điện thoại</TableCell>
-              <TableCell>Địa chỉ</TableCell>
-              <TableCell>Mật khẩu</TableCell>
+              <TableCell align="center">Chi nhánh</TableCell>
+              <TableCell align="center">Tên</TableCell>
+              <TableCell align="center">Email</TableCell>
+              <TableCell align="center">Số điện thoại</TableCell>
+              <TableCell align="center">Địa chỉ</TableCell>
               <TableCell align="center">Hành động</TableCell>
             </TableRow>
           </TableHead>
@@ -153,12 +152,11 @@ export default function Customers() {
               const pageItems = filtered.slice(start, start + pageSize)
               return pageItems.map((c) => (
                 <TableRow key={c._id || c.id}>
-                  <TableCell>{(branches.find(b => (b._id || b.id) === c.branchesId)?.name) || '-'}</TableCell>
-                  <TableCell>{c.name}</TableCell>
-                  <TableCell>{c.email}</TableCell>
-                  <TableCell>{c.phone}</TableCell>
-                  <TableCell>{c.address}</TableCell>
-                  <TableCell>••••••••</TableCell>
+                  <TableCell align="center">{(branches.find(b => (b._id || b.id) === c.branchesId)?.name) || '-'}</TableCell>
+                  <TableCell align="center">{c.name}</TableCell>
+                  <TableCell align="center">{c.email}</TableCell>
+                  <TableCell align="center">{c.phone}</TableCell>
+                  <TableCell align="center">{c.address}</TableCell>
                   <TableCell align="center">
                     <Button size="small" onClick={() => handleOpenEdit(c)}>Sửa</Button>
                     {isAdmin && <Button size="small" color="error" onClick={() => handleDelete(c._id || c.id)}>Xóa</Button>}
