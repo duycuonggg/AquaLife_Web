@@ -131,12 +131,12 @@ export default function Shop() {
 
   // fallback: show shop grid (original behavior)
   return (
-    <Box>
+    <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
-      <Box className="shop-page" sx={{ maxWidth: 1100, mx: 'auto', p: 3 }}>
+      <Box className="shop-page" sx={{ maxWidth: 1100, mx: 'auto', p: 3, mt: 10 }}>
 
         {/* Filters / Search */}
-        <Box className="shop-filters" display="flex" gap={2} alignItems="center" mb={3}>
+        <Box className="shop-filters" display="flex" gap={2} alignItems="center" mb={10}>
           <TextField size="small" placeholder="Tìm kiếm sản phẩm..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ minWidth: 240 }} />
 
           <FormControl size="small" sx={{ minWidth: 180 }}>

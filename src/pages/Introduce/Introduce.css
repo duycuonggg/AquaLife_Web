@@ -1,6 +1,5 @@
 /* Introduce page styles */
 .introduce-hero {
-	background: linear-gradient(180deg,#f7fbfb,#ffffff);
 	animation: heroShift 12s infinite linear;
 	padding: 80px 0;
 	text-align: center;
@@ -48,7 +47,6 @@
 }
 .introduce-cta {
 	text-align: center;
-	background: linear-gradient(180deg,#f7fbfb,#ffffff);
 	padding: 24px;
 	border-radius: 10px;
   margin-top: 200px;

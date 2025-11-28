@@ -121,7 +121,7 @@ export default function Profile() {
   }
 
   return (
-    <Box>
+    <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
       <Box className="profile-container" sx={{ maxWidth: 980, mx: 'auto', p: 3 }}>
         <Typography variant="h5" sx={{ fontWeight: 700, mb: 10 }}>Hồ sơ của tôi</Typography>

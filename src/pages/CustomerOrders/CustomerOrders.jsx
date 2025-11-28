@@ -31,7 +31,7 @@ export default function CustomerOrders() {
   }, [])
 
   return (
-    <Box>
+    <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
       <Box className="orders-container">
         <Typography variant="h5" sx={{ fontWeight: 700, mt: 10, mb: 10 }}>Đơn hàng của tôi</Typography>

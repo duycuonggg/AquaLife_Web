@@ -124,6 +124,16 @@ export const getCustomerOrdersAPI = async () => {
   return response.data
 }
 
+export const getOrdersAPI = async () => {
+  const response = await client.get('/v1/orders')
+  return response.data
+}
+
+export const updateOrderAPI = async (id, data) => {
+  const response = await client.put(`/v1/orders/${id}`, data)
+  return response.data
+}
+
 export const getOrderAPI = async (id) => {
   const response = await client.get(`/v1/orders/${id}`)
   return response.data

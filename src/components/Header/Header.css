@@ -6,7 +6,7 @@
   border-bottom: 1px solid rgba(0,0,0,0.06);
   position: sticky;
   top: 0;
-  background: #FFFFFF;
+  background: linear-gradient(180deg, #dbe8e8, #ffffff);
   z-index: 1400;
 }
 .home-nav .container {
