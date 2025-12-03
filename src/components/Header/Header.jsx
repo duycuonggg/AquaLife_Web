@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Button, Menu, MenuItem, Badge, Avatar, IconButton, Divider, ListItemIcon } from '@mui/material'
+import { Menu, MenuItem, Button, Badge, IconButton, Avatar, Divider, ListItemIcon, Box } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Link as RouterLink } from 'react-router-dom'
 import logo from '~/assets/logo.png'
-import '~/components/Header/Header.css'
-import { getProductsAPI } from '~/apis/index'
-import { getBranchesAPI, getCustomerAPI } from '~/apis/index'
+import { getBranchesAPI, getCustomerAPI, getProductsAPI } from '~/apis/index'
 import { cartCount } from '~/utils/cart'
 import { getUserFromToken } from '~/utils/auth'
 import { useNavigate } from 'react-router-dom'
@@ -78,10 +76,10 @@ export default function Header() {
   const handleCloseUser = () => setUserAnchor(null)
   const handleOpenBranches = (e) => setBranchAnchor(e.currentTarget)
   const handleCloseBranches = () => setBranchAnchor(null)
+
   const onSelectBranch = (b) => {
     const id = b?._id || b?.id || ''
     try {
-      // persist selection so other pages (and future loads) use it
       if (id) localStorage.setItem('selectedBranch', id)
       else localStorage.removeItem('selectedBranch')
     } catch (err) {
@@ -92,15 +90,15 @@ export default function Header() {
     } catch (err) {
       // ignore
     }
-    // do not force navigation away; allow user to stay on current page
     handleCloseBranches()
   }
+
 
   useEffect(() => {
     let mounted = true
     try {
       const payload = getUserFromToken()
-      if (!payload || payload.role !== 'customer') return
+      if (!payload || payload.role === 'admin' || payload.role === 'staff' || payload.role === 'manager') return
       setIsCustomerLoggedIn(true)
       const uid = payload.id
       // Prefer stored image/name from login flow to avoid fetching full customers list
@@ -136,25 +134,72 @@ export default function Header() {
   }, [])
 
   return (
-    <header className="home-nav">
-      <div className="container">
-        <div className="right">
-          <div className="brand">
-            <img src={logo} alt="AquaLife" />
-            <span className="brand-title">AquaLife</span>
-          </div>
-        </div>
+    <Box sx={{
+      padding: '12px 0',
+      borderBottom: '1px solid rgba(0,0,0,0.06)',
+      position: 'sticky',
+      top: 0,
+      background: 'linear-gradient(180deg, #dbe8e8, #ffffff)',
+      zIndex: 1300
+    }}>
+      <Box sx={{
+        maxWidth: 1100,
+        margin: '0 auto',
+        px: 1.5, display:
+          'flex', alignItems:
+          'center', justifyContent:
+          'space-between'
+      }}>
+        {/* title, logo */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box
+            component={RouterLink} to="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              textDecoration: 'none'
+            }}>
+            <Box component="img" src={logo} alt="AquaLife" sx={{ width: 44, height: 44 }} />
+            <Box sx={{ color: '#0b8798', fontWeight: 700 }}>AquaLife</Box>
+          </Box>
+        </Box>
 
-        <nav className="center" aria-label="main navigation">
-          <Button component={RouterLink} to="/" className="nav-link">Trang chủ</Button>
-          <Button className="nav-link" aria-controls={branchAnchor ? 'branch-menu' : undefined} aria-haspopup="true" onClick={handleOpenBranches}>
+        {/* navigation links */}
+        <Box sx={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2
+        }}>
+          <Button
+            component={RouterLink} to="/"
+            sx={{
+              color: '#000',
+              textTransform: 'none',
+              fontWeight: 500, '&:hover': { color: '#0b8798' }
+            }}>
+            Trang chủ
+          </Button>
+          <Button sx={{
+            color: '#000',
+            textTransform: 'none',
+            fontWeight: 500, '&:hover': { color: '#0b8798' }
+          }}
+          aria-controls={branchAnchor ? 'branch-menu' : undefined}
+          aria-haspopup="true"
+          onClick={handleOpenBranches}>
             Chi nhánh
           </Button>
           <Button
-            component={RouterLink}
-            to="/products"
-            className="nav-link"
-          >
+            component={RouterLink} to="/products"
+            sx={{
+              color: '#000',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': { color: '#0b8798' }
+            }}>
             Sản phẩm
           </Button>
           <Menu
@@ -187,11 +232,29 @@ export default function Header() {
             )}
           </Menu>
 
-          <Button component={RouterLink} to="/Introduce" className="nav-link">Giới thiệu</Button>
-          <Button component={RouterLink} to="/contact" className="nav-link">Liên hệ</Button>
-        </nav>
+          <Button
+            component={RouterLink} to="/Introduce"
+            sx={{
+              color: '#000',
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': { color: '#0b8798' }
+            }}>
+            Giới thiệu
+          </Button>
+          <Button
+            component={RouterLink} to="/contact"
+            sx={{
+              color: '#000',
+              textTransform: 'none',
+              fontWeight: 500, '&:hover': { color: '#0b8798' }
+            }}>
+            Liên hệ
+          </Button>
+        </Box>
 
-        <div className="left">
+        {/* cart and user */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button component={RouterLink} to="/cart" variant="text" aria-label="cart">
             <Badge badgeContent={count} color="warning">
               <ShoppingCartIcon sx={{ color: count > 0 ? '#f1c40f' : '#e67e22' }} />
@@ -234,10 +297,21 @@ export default function Header() {
               </Menu>
             </>
           ) : (
-            <Button className="nav-link" component={RouterLink} to="/login" variant="text">Đăng nhập</Button>
+            <Button
+              component={RouterLink}
+              to="/login"
+              variant="text"
+              sx={{
+                color: '#000',
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': { color: '#0b8798' }
+              }}>
+              Đăng nhập
+            </Button>
           )}
-        </div>
-      </div>
-    </header >
+        </Box>
+      </Box>
+    </Box>
   )
 }

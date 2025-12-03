@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Box, Grid, Card, CardContent, Button, Typography, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Box, Grid, Card, CardContent, Button, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Pagination, Stack } from '@mui/material'
 import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
 import { Link as RouterLink } from 'react-router-dom'
-import '~/pages/Shop/Shop.css'
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
-import Pagination from '@mui/material/Pagination'
-import Stack from '@mui/material/Stack'
 
 export default function Shop() {
   const [products, setProducts] = useState([])
@@ -133,7 +130,7 @@ export default function Shop() {
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
-      <Box className="shop-page" sx={{ maxWidth: 1100, mx: 'auto', p: 3, mt: 10 }}>
+      <Box sx={{ maxWidth: 1100, mx: 'auto', p: 3, mt: 10 }}>
 
         {/* Filters / Search */}
         <Box className="shop-filters" display="flex" gap={2} alignItems="center" mb={10}>
@@ -158,18 +155,15 @@ export default function Shop() {
         <Grid container spacing={3}>
           {pageItems.map((p) => (
             <Grid item xs={12} sm={6} md={3} key={p._id || p.id}>
-              <Card className="shop-card">
-                <RouterLink to={`/products/${p._id || p.id}`} className="card-thumb-link">
-                  <div className="card-thumb" style={{ backgroundImage: `url(${p.imageUrl || ''})` }} />
+              <Card sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: '0 12px 30px rgba(16,24,32,0.08)', height: '100%' }}>
+                <RouterLink to={`/products/${p._id || p.id}`}>
+                  <Box sx={{ width: '100%', height: { xs: 180, md: 220 }, backgroundImage: `url(${p.imageUrl || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', display: 'block' }} />
                 </RouterLink>
                 <CardContent>
-                  <Typography className="mini-name" sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
+                  <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
-                    <Typography className="mini-price" sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
-                    <Button variant="contained" size="small" onClick={() => {
-                      addToCart(p, 1)
-                      try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) }
-                    }}>Thêm vào giỏ</Button>
+                    <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
+                    <Button variant="contained" size="small" onClick={() => { addToCart(p, 1); try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) } }}>Thêm vào giỏ</Button>
                   </Box>
                 </CardContent>
               </Card>

@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton, Typography, TextField } from '@mui/material'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, IconButton, Typography, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 // ProductList was previously used for card/grid view. The product table is the primary list now.
 import ProductForm from '~/pages/Admin/Products/ProductForm/ProductForm.jsx'
@@ -166,7 +159,7 @@ export default function ProductsPage() {
                       </Box>
                     </TableCell>
                     <TableCell align="center">{p.type}</TableCell>
-                    <TableCell align="center">{p.price}</TableCell>
+                    <TableCell align="center" sx={{ color: '#d32f2f', fontWeight: '700' }}>{p.price} đ</TableCell>
                     <TableCell align="center">{p.quantity}</TableCell>
                     <TableCell align="center">
                       <Button size="small" onClick={() => handleEdit(p)}>Sửa</Button>

@@ -1,71 +1,58 @@
 import { useEffect, useState } from 'react'
-import {
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Button,
-  Tabs,
-  Tab,
-  LinearProgress
-} from '@mui/material'
+import { Box, AppBar, Toolbar, Typography, Button, Tabs, Tab } from '@mui/material'
 import {
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
   People as PeopleIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
-import './Admin.css'
-import { useNavigate } from 'react-router-dom'
-import { getBranchesAPI } from '~/apis/index'
-// product dialogs are handled inside the Products page
+import { useLocation } from 'react-router-dom'
 import logo from '~/assets/logo.png'
 import Products from '~/pages/Admin/Products/Products'
 import Customers from '~/pages/Admin/Customers/Customers'
 import Employees from '~/pages/Admin/Employees/Employees'
 import AdminOrders from '~/pages/Admin/AdminOrders/AdminOrders.jsx'
 import checkout from '~/assets/checkout.png'
+import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
+import { useNavigate } from 'react-router-dom'
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
 
 export default function Admin() {
   const [section, setSection] = useState('dashboard')
   const [tabIndex, setTabIndex] = useState(0)
-
-  const [branches, setBranches] = useState([])
-  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  const location = useLocation()
 
+  // initialize section / tab based on current URL so deep links work
   useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      try {
-        const data = await getBranchesAPI()
-        setBranches(data)
-      } catch (err) {
-        // keep debug info out of UI per requirement; allow a single console line for dev troubleshooting
-        /* eslint-disable-next-line no-console */
-        console.error('Failed to load branches', err)
-      } finally {
-        setLoading(false)
-      }
+    const path = (location.pathname || '').toLowerCase()
+    if (path.includes('/admin/products')) {
+      setSection('products')
+      setTabIndex(1)
+    } else if (path.includes('/admin/orders')) {
+      setSection('orders')
+      setTabIndex(2)
+    } else if (path.includes('/admin/employees')) {
+      setSection('employees')
+      setTabIndex(3)
+    } else if (path.includes('/admin/customers')) {
+      setSection('customers')
+      setTabIndex(4)
+    } else {
+      setSection('dashboard')
+      setTabIndex(0)
     }
+  }, [location.pathname])
 
-    // load branches once when component mounts
-    load()
-  }, [])
   return (
-    <Box className="admin-root">
-      <AppBar position="fixed" className="admin-appbar">
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <AppBar position="fixed" sx={{ zIndex: 1300, background: 'linear-gradient(180deg, #dbe8e8, #ffffff)' }}>
         <Toolbar>
-          <img src={logo} alt="AquaLife Logo" className="logo-icon" />
-          <Typography className="appbar-title">AquaLife</Typography>
+          <Box component="img" src={logo} alt="AquaLife Logo" sx={{ width: 44, height: 44 }} />
+          <Typography sx={{ fontWeight: 700, color: '#0b8798', ml: 1 }}>AquaLife</Typography>
           <Box sx={{ flex: 1 }} />
           <Button
-            className="appbar-title"
             startIcon={<img src={checkout} alt="Checkout" style={{ width: 24, height: 24 }} />}
             onClick={() => {
               try {
@@ -80,93 +67,35 @@ export default function Admin() {
           </Button>
         </Toolbar>
       </AppBar>
-
-      <Box component="main" className="admin-main">
-        <Box className="admin-top">
-          <Box className="admin-title-area">
-            <Tabs
-              value={tabIndex}
-              onChange={(e, v) => {
-                setTabIndex(v)
-                // internal keys (English) used by section comparisons; labels remain Vietnamese
-                const mapping = ['dashboard', 'products', 'orders', 'employees', 'customers']
-                setSection(mapping[v])
-              }}
-              sx={{ mt: 1 }}
-            >
-              <Tab icon={<DashboardIcon />} iconPosition="start" label="Bảng điều khiển" />
-              <Tab icon={<InventoryIcon />} iconPosition="start" label="Sản phẩm" />
-              <Tab icon={<ReceiptLongIcon />} iconPosition="start" label="Đơn hàng" />
-              <Tab icon={<PeopleIcon />} iconPosition="start" label="Nhân viên" />
-              <Tab icon={<PersonIcon />} iconPosition="start" label="Khách hàng" />
-            </Tabs>
-          </Box>
+      <Box component="main" sx={{ flex: 1, p: 3, mt: '64px', background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs
+            value={tabIndex}
+            onChange={(e, v) => {
+              setTabIndex(v)
+              const mapping = ['dashboard', 'products', 'orders', 'employees', 'customers']
+              const paths = ['/admin', '/admin/products', '/admin/orders', '/admin/employees', '/admin/customers']
+              const next = mapping[v] || 'dashboard'
+              setSection(next)
+              try {
+                navigate(paths[v] || '/admin', { replace: true })
+              } catch (err) {
+                /* ignore navigation errors */
+              }
+            }}
+            aria-label="Admin sections"
+          >
+            <Tab icon={<DashboardIcon />} label="Tổng quan" />
+            <Tab icon={<InventoryIcon />} label="Sản phẩm" />
+            <Tab icon={<ReceiptLongIcon />} label="Đơn hàng" />
+            <Tab icon={<PeopleIcon />} label="Nhân viên" />
+            <Tab icon={<PersonIcon />} label="Khách hàng" />
+          </Tabs>
         </Box>
 
         {section === 'dashboard' && (
           <Box>
-            <Box mt={3}>
-              <Typography variant="h6" gutterBottom>Hiệu suất bán hàng chi nhánh</Typography>
-              <Grid container spacing={3}>
-                {loading ? (
-                  <Grid item xs={12}>
-                    <Card>
-                      <CardContent>
-                        <Typography>Đang tải...</Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ) : (branches.length > 0 ? branches.map((b) => (
-                  <Grid item xs={12} key={b._id || b.id}>
-                    <Card className="branch-panel">
-                      <CardContent>
-                        <Box display="flex" justifyContent="space-between" alignItems="center">
-                          <Box>
-                            <Typography variant="h6">{b.name}</Typography>
-                          </Box>
-                          <Box>
-                            <Button size="small" variant="text">Xem chi tiết ▾</Button>
-                          </Box>
-                        </Box>
-
-                        <Box mt={2}>
-                          <LinearProgress variant="determinate" value={b.progress || 0} sx={{ height: 10, borderRadius: 6 }} />
-                        </Box>
-
-                        <Box className="branch-inner-card" mt={2}>
-                          <Grid container spacing={2}>
-                            <Grid item xs={12} sm={3}>
-                              <Box className="metric-tile">
-                                <Typography variant="caption">Doanh thu</Typography>
-                                <Typography fontWeight={700}>{b.revenue ?? '-'}</Typography>
-                              </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={3}>
-                              <Box className="metric-tile">
-                                <Typography variant="caption">Đơn hàng</Typography>
-                                <Typography fontWeight={700}>{b.orders ?? '-'}</Typography>
-                              </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={3}>
-                              <Box className="metric-tile">
-                                <Typography variant="caption">Khách hàng</Typography>
-                                <Typography fontWeight={700}>{b.customers ?? '-'}</Typography>
-                              </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={3}>
-                              <Box className="metric-tile">
-                                <Typography variant="caption">Nhân viên</Typography>
-                                <Typography fontWeight={700}>{b.avgOrder ?? '-'}</Typography>
-                              </Box>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                )) : null)}
-              </Grid>
-            </Box>
+            <Dashboard />
           </Box>
         )}
 

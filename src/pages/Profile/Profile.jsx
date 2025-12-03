@@ -5,7 +5,6 @@ import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
 import { getUserFromToken } from '~/utils/auth'
 import { getCustomerAPI, updateCustomerAPI } from '~/apis/index'
-import '~/pages/Profile/Profile.css'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -123,12 +122,12 @@ export default function Profile() {
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
-      <Box className="profile-container" sx={{ maxWidth: 980, mx: 'auto', p: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 700, mb: 10 }}>Hồ sơ của tôi</Typography>
+      <Box sx={{ maxWidth: 980, mx: 'auto', p: 3, pt: 6, mb: 6 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 6 }}>Hồ sơ của tôi</Typography>
 
-        <Box className="profile-card">
-          <Box className="profile-left">
-            <Avatar src={form.image} alt={form.name || 'Khách hàng'} sx={{ width: 120, height: 120, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 3, background: '#fff', borderRadius: 2, p: 2.5, boxShadow: '0 2px 6px rgba(0,0,0,0.04)', alignItems: 'flex-start', border: '1px solid #0b8798', flexDirection: { xs: 'column', md: 'row' } }}>
+          <Box sx={{ width: { xs: '100%', md: 260 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Avatar src={form.image} alt={form.name || 'Khách hàng'} sx={{ width: 120, height: 120, mb: 2, border: '4px solid #f3f7f8' }}>
               {(!form.image && form.name) ? form.name[0] : ''}
             </Avatar>
             <Box sx={{ mt: 1 }}>
@@ -136,7 +135,7 @@ export default function Profile() {
             </Box>
           </Box>
 
-          <Box className="profile-right">
+          <Box sx={{ flex: 1 }}>
             <TextField label="Họ và tên" fullWidth value={form.name} onChange={onChange('name')} margin="normal" disabled={!editing} />
             <TextField label="Email" fullWidth value={form.email} onChange={onChange('email')} margin="normal" disabled={!editing} />
             <TextField label="Số điện thoại" fullWidth value={form.phone} onChange={onChange('phone')} margin="normal" disabled={!editing} />

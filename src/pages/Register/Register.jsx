@@ -1,18 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  TextField,
-  Typography,
-  InputAdornment,
-  IconButton,
-  Link
-} from '@mui/material'
+import { Box, Button, Card, CardContent, TextField, Typography, InputAdornment, IconButton, Link } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import '~/pages/Register/Register.css'
 import { registerAPI } from '~/apis/index'
 import logo from '~/assets/logo.png'
 
@@ -107,27 +96,24 @@ const Register = () => {
   }
 
   return (
-    <Box className="signup-container">
-      <Box className="signup-header">
-        <Box className="logo-area">
-          <img src={logo} alt="AquaLife Logo" className="logo-icon" />
-          <Typography variant="h3" className="logo-text">
-            AquaLife
-          </Typography>
+    <Box sx={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(90deg,#e9fbff 0%, #f1f7fb 100%)', px: 2, py: 5, fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
+    }}>
+      <Box sx={{ textAlign: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+          <Box component="img" src={logo} alt="AquaLife Logo" sx={{ width: 70, height: 70 }} />
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#0693a6', ml: 1 }}>AquaLife</Typography>
         </Box>
-        <Typography variant="h6" className="page-title">
-          Tạo tài khoản mới
-        </Typography>
-        <Typography variant="body1" className="page-subtitle">
-          Tham gia cùng với AquaLife
-        </Typography>
+        <Typography variant="h6" sx={{ mb: 0.5, fontWeight: 700 }}>Tạo tài khoản mới</Typography>
+        <Typography variant="body1" color="text.secondary">Tham gia cùng với AquaLife</Typography>
       </Box>
 
-      <Card className="signup-card">
-        <CardContent className="signup-card-content">
+      <Card sx={{ width: '100%', maxWidth: 760, borderRadius: 2, boxShadow: '0 18px 30px rgba(20,60,80,0.06)', overflow: 'visible' }}>
+        <CardContent sx={{ p: { xs: 3, md: 5 } }}>
           <form onSubmit={handleSubmit}>
             {/* Map inputs for concise code; layout handled by CSS grid (.form-grid) */}
-            <Box className="form-grid">
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(260px, 1fr))' }, gap: '12px 16px' }}>
               {[
                 { id: 'fullName', name: 'fullName', label: 'Họ tên', placeholder: 'John Doe', type: 'text', required: true },
                 { id: 'email', name: 'email', label: 'Địa chỉ email', placeholder: 'you@example.com', type: 'email', required: true },
@@ -136,8 +122,8 @@ const Register = () => {
                 { id: 'password', name: 'password', label: 'Mật khẩu', placeholder: '••••••••', type: showPassword ? 'text' : 'password', required: true, toggle: true },
                 { id: 'confirmPassword', name: 'confirmPassword', label: 'Xác nhận mật khẩu', placeholder: '••••••••', type: 'password', required: true }
               ].map((f) => (
-                <Box className="form-group" key={f.name}>
-                  <label htmlFor={f.id}>{f.label}</label>
+                <Box key={f.name} sx={{ mb: 2 }}>
+                  <Box component="label" htmlFor={f.id} sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>{f.label}</Box>
                   <TextField
                     id={f.id}
                     name={f.name}
@@ -148,7 +134,13 @@ const Register = () => {
                     required={f.required}
                     value={formData[f.name]}
                     onChange={handleChange}
-                    className="custom-textfield"
+                    sx={{
+                      '& .MuiOutlinedInput-root': { borderRadius: 2, backgroundColor: '#fff' },
+                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
+                      '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7' },
+                      '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7', borderWidth: '1px' },
+                      '& input': { padding: '12px 14px' },
+                    }}
                     InputProps={f.toggle ? {
                       endAdornment: (
                         <InputAdornment position="end">
@@ -169,28 +161,16 @@ const Register = () => {
             </Box>
 
             {errorMsg && (
-              <Typography color="error" className="error-text">
-                {errorMsg}
-              </Typography>
+              <Typography color="error" sx={{ textAlign: 'center', mb: 2 }}>{errorMsg}</Typography>
             )}
 
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              className="signup-button"
-              disabled={loading}
-            >
+            <Button type="submit" variant="contained" fullWidth disabled={loading} sx={{ mt: 1, py: 1.5, fontWeight: 600, borderRadius: 1, backgroundColor: '#008C9E', '&:hover': { backgroundColor: '#00798a' } }}>
               {loading ? 'Đang tạo...' : 'Tạo tài khoản'}
             </Button>
           </form>
-
-          <Box className="signup-footer">
-            <Typography variant="body2">
-              Bạn đã có tài khoản?{' '}
-              <Link href="/login" underline="hover" className="signin-link">
-                Đăng nhập
-              </Link>
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2">Bạn đã có tài khoản?{' '}
+              <Link href="/login" underline="hover" sx={{ color: '#008C9E', fontWeight: 600 }}>Đăng nhập</Link>
             </Typography>
           </Box>
         </CardContent>

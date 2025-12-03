@@ -1,18 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  TextField,
-  Typography,
-  InputAdornment,
-  IconButton,
-  Link
-} from '@mui/material'
+import { Box, Button, Card, CardContent, TextField, Typography, InputAdornment, IconButton, Link } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import '~/pages/Login/Login.css'
 import { loginAPI } from '~/apis/index'
 import { getUserFromToken } from '~/utils/auth'
 import logo from '~/assets/logo.png'
@@ -28,8 +17,10 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrorMsg('')
-    if (!email) { setErrorMsg('Email is required'); return }
-    if (!password) { setErrorMsg('Password is required'); return }
+    if (!email || !password) {
+      setErrorMsg('Vui lòng nhập đầy đủ email và mật khẩu')
+      return
+    }
     try {
       setLoading(true)
       const res = await loginAPI({ email, password })
@@ -61,47 +52,47 @@ export default function Login() {
         navigate('/', { replace: true })
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Login failed. Please try again.')
+      setErrorMsg(err?.response?.data?.message || 'Đăng nhập thất bại, vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Box className="signup-container">
-      <Box className="signup-header">
-        <Box className="logo-area">
-          <img src={logo} alt="AquaLife Logo" className="logo-icon" />
-          <Typography variant="h3" className="logo-text">AquaLife</Typography>
+    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(90deg,#e9fbff 0%, #f1f7fb 100%)', p: 4 }}>
+      <Box sx={{ textAlign: 'center', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+          <Box component="img" src={logo} alt="AquaLife Logo" sx={{ width: 70, height: 70 }} />
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#0693a6' }}>AquaLife</Typography>
         </Box>
-        <Typography variant="h6" className="page-title">Chào mừng trở lại</Typography>
-        <Typography variant="body1" className="page-subtitle">Đăng nhập vào tài khoản của bạn</Typography>
+        <Typography variant="h6" sx={{ mt: 1, mb: 0.5, fontWeight: 700 }}>Chào mừng trở lại</Typography>
+        <Typography variant="body1" color="text.secondary">Đăng nhập vào tài khoản của bạn</Typography>
       </Box>
 
-      <Card className="signup-card">
-        <CardContent className="signup-card-content">
+      <Card sx={{ width: '100%', maxWidth: 420, p: 0, borderRadius: 2, boxShadow: '0 18px 30px rgba(20,60,80,0.06)' }}>
+        <CardContent sx={{ p: 3 }}>
           <form onSubmit={handleSubmit}>
-            <Box className="form-group">
-              <label htmlFor="email">Địa chỉ email</label>
-              <TextField id="email" name="email" type="email" placeholder="you@example.com" variant="outlined" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} className="custom-textfield" />
+            <Box sx={{ mb: 2 }}>
+              <Box component="label" htmlFor="email" sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>Địa chỉ email</Box>
+              <TextField id="email" name="email" type="email" placeholder="you@example.com" variant="outlined" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, '& input': { padding: '12px 14px' } }} />
             </Box>
 
-            <Box className="form-group">
-              <label htmlFor="password">Mật khẩu</label>
-              <TextField id="password" name="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" variant="outlined" fullWidth required value={password} onChange={(e) => setPassword(e.target.value)} className="custom-textfield" InputProps={{ endAdornment: (
+            <Box sx={{ mb: 2 }}>
+              <Box component="label" htmlFor="password" sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>Mật khẩu</Box>
+              <TextField id="password" name="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" variant="outlined" fullWidth required value={password} onChange={(e) => setPassword(e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, '& input': { padding: '12px 14px' } }} InputProps={{ endAdornment: (
                 <InputAdornment position="end">
                   <IconButton aria-label="toggle password visibility" onClick={() => setShowPassword(s => !s)} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
                 </InputAdornment>
               ) }} />
             </Box>
 
-            {errorMsg && <Typography color="error" className="error-text">{errorMsg}</Typography>}
+            {errorMsg && <Typography color="error" sx={{ mb: 2 }}>{errorMsg}</Typography>}
 
-            <Button type="submit" variant="contained" fullWidth className="signup-button" disabled={loading}>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</Button>
+            <Button type="submit" variant="contained" fullWidth disabled={loading} sx={{ mt: 1, py: 1.5, backgroundColor: '#008C9E', '&:hover': { backgroundColor: '#00798a' } }}>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</Button>
           </form>
 
-          <Box className="signup-footer">
-            <Typography variant="body2">Bạn chưa có tài khoản{' '}<Link href="/register" underline="hover" className="signin-link">Đăng ký</Link></Typography>
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2">Bạn chưa có tài khoản{' '}<Link href="/register" underline="hover" sx={{ color: '#0b8798', fontWeight: 600 }}>Đăng ký</Link></Typography>
           </Box>
         </CardContent>
       </Card>
