@@ -4,7 +4,7 @@ import { Box, Grid, Card, CardContent, Button, Typography, TextField, IconButton
 import { getProductAPI, getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
 import { Link as RouterLink } from 'react-router-dom'
-import '~/pages/ProductDetail/ProductDetail.css'
+// styles migrated from ProductDetail.css into MUI `sx` props
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
 import AddIcon from '@mui/icons-material/Add'
@@ -73,12 +73,12 @@ export default function ProductDetail() {
       <Box sx={{ maxWidth: 1100, mx: 'auto', p: 3 }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-            <Box className="pd-image-wrap">
-              <Box className="pd-main-image" style={{ backgroundImage: `url(${product.imageUrl || ''})` }} />
+            <Box sx={{ borderRadius: '8px', overflow: 'hidden', background: '#f8fafc' }}>
+              <Box sx={{ height: { xs: 260, md: 360 }, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${product.imageUrl || ''})` }} />
             </Box>
             <Box display="flex" gap={2} mt={2}>
               {((product.thumbnails && product.thumbnails.length) ? product.thumbnails : [product.imageUrl]).map((t, i) => (
-                <Box key={i} className="pd-thumb" style={{ backgroundImage: `url(${t || ''})` }} />
+                <Box key={i} sx={{ width: { xs: 64, md: 80 }, height: { xs: 48, md: 60 }, borderRadius: '6px', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', backgroundImage: `url(${t || ''})` }} />
               ))}
             </Box>
           </Grid>
@@ -136,7 +136,7 @@ export default function ProductDetail() {
                     <Box sx={{ height: 120, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${r.imageUrl || ''})` }} />
                     <CardContent>
                       <Typography sx={{ fontWeight: 700 }}>{r.name}</Typography>
-                      <Typography className="mini-price" sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(r.price) || 0).toLocaleString('vi-VN')} đ</Typography>
+                      <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(r.price) || 0).toLocaleString('vi-VN')} đ</Typography>
                     </CardContent>
                   </RouterLink>
                 </Card>

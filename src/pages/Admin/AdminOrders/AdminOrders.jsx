@@ -3,7 +3,7 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import RefreshIcon from '@mui/icons-material/Refresh'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AdminOrderDetail from './AdminOrderDetail/AdminOrderDetail'
-import './AdminOrders.css'
+// AdminOrders.css was empty — styles handled via MUI `sx` props
 import { getOrdersAPI, getBranchesAPI, getCustomersAPI, updateOrderAPI } from '~/apis/index'
 
 export default function AdminOrders() {
@@ -51,6 +51,7 @@ export default function AdminOrders() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); loadBranches(); loadCustomers() }, [])
 
   const [selectedOrderId, setSelectedOrderId] = useState(null)

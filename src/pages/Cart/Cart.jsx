@@ -69,6 +69,7 @@ export default function Cart() {
       // determine created order id (server may return insertedId or created doc)
       const orderId = created?.insertedId || created?._id || created?.id || (created && created?.ops && created.ops[0]?._id)
       if (!orderId) {
+        // eslint-disable-next-line no-console
         console.error('Unexpected createOrder response', created)
         throw new Error('Không lấy được id đơn hàng từ server')
       }
@@ -93,7 +94,7 @@ export default function Cart() {
       setCustomerNote('')
       setPaymentMethod('cash')
       alert('Thanh toán thành công. Cảm ơn bạn đã mua hàng!')
-      try { navigate('/orders') } catch (e) { /* ignore */ }
+      try { navigate('/customer/orders') } catch (e) { /* ignore */ }
 
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -128,7 +129,7 @@ export default function Cart() {
                 </Card>
               ))}
               <Box sx={{ mt: 5, mb: 5 }}>
-                <Typography sx={{ fontWeight: 700 }}>Tổng tiền: <span style={{color: '#d32f2f'}}>{total.toLocaleString('vi-VN')} đ</span></Typography>
+                <Typography sx={{ fontWeight: 700 }}>Tổng tiền: <span style={{color: '#d32f2f' }}>{total.toLocaleString('vi-VN')} đ</span></Typography>
               </Box>
             </Grid>
             <Grid item xs={12} md={8} mt={5} mb={20}>

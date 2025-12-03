@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Box, Button, Typography, Grid, Card, CardContent, CardActions, TextField } from '@mui/material'
+import { Box, Grid, Card, CardContent, Button, Typography, TextField } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
-// logo and shopping cart icon unused here (Header renders brand/cart)
-import '~/pages/Home/Home.css'
 const heroImg = new URL('~/assets/Banner.png', import.meta.url).href
 import Footer from '~/components/Footer/Footer'
 import Header from '~/components/Header/Header'
@@ -61,53 +59,46 @@ export default function Home() {
 
   const featured = (products || []).filter(matchesBranch).slice(0, 8)
 
-  const categories = [
-    { title: 'Bể cá', subtitle: 'Tanks' },
-    { title: 'Cá nhiệt đới', subtitle: 'Tropical Fish' },
-    { title: 'Thiết bị', subtitle: 'Equipment' },
-    { title: 'Thực vật thủy sinh', subtitle: 'Aquatic Plants' }
-  ]
-
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       {/* Navbar (shared) */}
       <Header />
 
       {/* Hero (full-bleed image with slogan) */}
-      <Box className="home-hero" role="img" aria-label="Hero banner" style={{ backgroundImage: `url(${heroImg})` }}>
-        <Box className="hero-slogan">
-          <span className="line line1">Chạm vào từng khoảnh khắc</span>
+      <Box
+        role="img"
+        aria-label="Hero banner"
+        sx={{
+          width: '100%',
+          backgroundImage: `url(${heroImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
+          height: { xs: 420, md: 680 },
+          position: 'relative'
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          left: { xs: 24, md: 48 },
+          top: '28%',
+          color: '#fff',
+          fontWeight: 600,
+          fontStyle: 'italic',
+          lineHeight: 1.05,
+          textShadow: '0 6px 20px rgba(0,0,0,0.45)',
+          width: '30ch',
+          fontFamily: 'monospace',
+          fontSize: { xs: '24px', sm: '28px', md: '44px', lg: '56px' }
+        }}>
+          <Box component="span" sx={{ display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', width: '30ch' }}>Chạm vào từng khoảnh khắc</Box>
           <br />
-          <span className="line line2">sống động <span style={{ color: 'red' }}>&#9825;</span></span>
-        </Box>
-      </Box>
-
-      {/* Categories */}
-      <Box sx={{ py: 4 }}>
-        <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Danh mục sản phẩm</Typography>
-        </Box>
-        <Box className="home-categories">
-          <Grid container spacing={3}>
-            {categories.map((c) => (
-              <Grid item xs={12} sm={6} md={3} key={c.title}>
-                <Card sx={{ height: 160, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: 'linear-gradient(180deg,#fff,#f7fdfe)' }}>
-                  <CardContent>
-                    <Typography variant="subtitle2" color="primary">{c.subtitle}</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{c.title}</Typography>
-                  </CardContent>
-                  <CardActions sx={{ justifyContent: 'flex-start', px: 2, pb: 2 }}>
-                    <Button component={RouterLink} to="/products" size="small">View {c.subtitle}</Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          <Box component="span" sx={{ display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', width: '15ch' }}>sống động <Box component="span" sx={{ color: 'red' }}>&#9825;</Box></Box>
         </Box>
       </Box>
 
       {/* Featured Products (minimal view: image, name, price) */}
-      <Box className="home-featured">
+      <Box sx={{ maxWidth: 1100, mx: 'auto', p: 1.5, mt: 10 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Sản phẩm nổi bật</Typography>
           <Box sx={{ flex: 1 }} />
@@ -120,18 +111,15 @@ export default function Home() {
             return (p.name || '').toLowerCase().includes(q) || (p.type || '').toLowerCase().includes(q)
           }).map((p) => (
             <Grid item xs={6} sm={4} md={3} key={p._id || p.id}>
-              <Card className="shop-card">
-                <RouterLink to={`/products/${p._id || p.id}`} className="card-thumb-link">
-                  <div className="card-thumb" style={{ backgroundImage: `url(${p.imageUrl || ''})` }} />
+              <Card sx={{ borderRadius: 1, background: '#fff', boxShadow: '0 6px 18px rgba(16,24,32,0.06)' }}>
+                <RouterLink to={`/products/${p._id || p.id}`}>
+                  <Box sx={{ width: '100%', height: 140, backgroundImage: `url(${p.imageUrl || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 1 }} />
                 </RouterLink>
                 <CardContent>
-                  <Typography className="mini-name" sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
+                  <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
-                    <Typography className="mini-price" sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
-                    <Button variant="contained" size="small" onClick={() => {
-                      addToCart(p, 1)
-                      try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) }
-                    }}>Thêm vào giỏ</Button>
+                    <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
+                    <Button variant="contained" size="small" onClick={() => { addToCart(p, 1); try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) } }}>Thêm vào giỏ</Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -141,7 +129,7 @@ export default function Home() {
       </Box>
 
       {/* Feature icons */}
-      <Box sx={{ py: 4, mt: 10, mb: 10 }}>
+      <Box sx={{ mt: 20 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
         </Box>
@@ -179,28 +167,15 @@ export default function Home() {
         </Box>
       </Box>
 
-      {/* Testimonials + Newsletter */}
-      <Box className="home-testimonials">
-        <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Khách hàng của chúng tôi</Typography>
+      {/* Newsletter signup */}
+      <Box sx={{ mt: 30, mb: 30 }}>
+        <Box sx={{ textAlign: 'center' }} >
+          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10, mb: 5 }}>Hãy đăng ký ngay</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 10, textAlign: 'center' }}>Nhận các mẹo chăm sóc bể cá chuyên nghiệp, ưu đãi độc quyền và sản phẩm mới.</Typography>
         </Box>
-        <Grid container spacing={3} mb={4}>
-          <Grid item xs={12} md={4}><Card><CardContent><Typography fontWeight={700}>Sarah Johnson</Typography><Typography variant="body2" color="text.secondary">Love the selection and fast delivery.</Typography></CardContent></Card></Grid>
-          <Grid item xs={12} md={4}><Card><CardContent><Typography fontWeight={700}>Michael Chen</Typography><Typography variant="body2" color="text.secondary">Great quality fish and plants.</Typography></CardContent></Card></Grid>
-          <Grid item xs={12} md={4}><Card><CardContent><Typography fontWeight={700}>Emily Rodriguez</Typography><Typography variant="body2" color="text.secondary">Customer support helped me set up my tank.</Typography></CardContent></Card></Grid>
-        </Grid>
-      </Box>
-
-      <Box sx={{ py: 4 }}>
-        <Box className="home-newsletter" >
-          <Box display="flex" alignItems="center" gap={2} mb={2} justifyContent={'center'} flexDirection={'column'}>
-            <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10 }}>Hãy đăng ký ngay</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 10, textAlign: 'center' }}>Nhận các mẹo chăm sóc bể cá chuyên nghiệp, ưu đãi độc quyền và sản phẩm mới.</Typography>
-          </Box>
-          <Box className="subscribe-form" display="flex" gap={2} >
-            <TextField placeholder="Nhập email của bạn" fullWidth />
-            <Button variant="contained">Gửi</Button>
-          </Box>
+        <Box sx={{ display: 'flex', width: '50%', mx: 'auto', mb: 10 }} >
+          <TextField placeholder="Nhập email của bạn" fullWidth />
+          <Button variant="contained">Gửi</Button>
         </Box>
       </Box>
 

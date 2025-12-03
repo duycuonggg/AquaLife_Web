@@ -48,14 +48,21 @@ export default function AdminOrderDetail({ open, orderId, onClose }) {
             {!order && !loading && <Typography>Không tìm thấy đơn hàng.</Typography>}
             {order && (
               <>
-                <Box mb={2}>
+                <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
                   <Typography><span style={{ fontWeight: 700 }}>Mã đơn:</span> {order._id || order.id}</Typography>
+                </Box>
+                <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
                   <Typography><span style={{ fontWeight: 700 }}>Thời gian:</span> {new Date(order.orderDate).toLocaleString()}</Typography>
+                </Box>
+                <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
                   <Typography><span style={{ fontWeight: 700 }}>Trạng thái:</span> {order.status}</Typography>
+                </Box>
+                <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
                   <Typography><span style={{ fontWeight: 700 }}>Tổng:</span> {(Number(order.totalPrice) || 0).toLocaleString('vi-VN')} đ</Typography>
+                </Box>
+                <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
                   <Typography><span style={{ fontWeight: 700 }}>Địa chỉ:</span> {order.deliveryAddress}</Typography>
                 </Box>
-
                 <TableContainer component={Paper} elevation={0}>
                   <Table size="small">
                     <TableHead>

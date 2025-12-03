@@ -1,9 +1,0 @@
-.pd-image-wrap { border-radius: 8px; overflow: hidden; background: #f8fafc }
-.pd-main-image { height: 360px; background-size: cover; background-position: center }
-.pd-thumb { width: 80px; height: 60px; border-radius: 6px; background-size: cover; background-position: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08) }
-
-/* small responsive tweaks */
-@media (max-width: 768px) {
-  .pd-main-image { height: 260px }
-  .pd-thumb { width: 64px; height: 48px }
-}

@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react'
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
-import './OrderDetail.css'
+// styles migrated from OrderDetail.css into MUI `sx` props
 import { getOrderAPI, getOrderDetailsAPI, getProductAPI } from '~/apis/index'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 export default function OrderDetail() {
   const { id } = useParams()
-  const navigate = useNavigate()
   const [order, setOrder] = useState(null)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(false)
@@ -60,23 +59,23 @@ export default function OrderDetail() {
   return (
     <Box>
       <Header />
-      <Box className="order-detail-root">
+      <Box sx={{ maxWidth: 1000, margin: '0 auto', p: 3 }}>
         <Typography variant="h5" sx={{ fontWeight: 700, mb: 10, mt: 10 }}>Chi tiết đơn hàng</Typography>
-        <Box className="order-card">
+        <Box sx={{ background: '#fff', p: '18px', borderRadius: '8px', boxShadow: '0 6px 18px rgba(0,0,0,0.04)', marginBottom: '100px' }}>
           {loading && !order && <Typography>Đang tải...</Typography>}
           {order && (
             <>
-              <Box className="order-meta">
-                <Typography className='order-title'><strong>Mã đơn:</strong> {order._id || order.id}</Typography>
-                <Typography className='order-title'><strong>Thời gian:</strong> {new Date(order.orderDate).toLocaleString()}</Typography>
-                <Typography className='order-title'><strong>Trạng thái:</strong> {order.status}</Typography>
-                <Typography className='order-title'><strong>Tổng:</strong> {(Number(order.totalPrice) || 0).toLocaleString('vi-VN')} đ</Typography>
-                <Typography className='order-title'><strong>Địa chỉ:</strong> {order.deliveryAddress}</Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '100px' }}>
+                <Typography sx={{ lineHeight: 3 }}><strong>Mã đơn:</strong> {order._id || order.id}</Typography>
+                <Typography sx={{ lineHeight: 3 }}><strong>Thời gian:</strong> {new Date(order.orderDate).toLocaleString()}</Typography>
+                <Typography sx={{ lineHeight: 3 }}><strong>Trạng thái:</strong> {order.status}</Typography>
+                <Typography sx={{ lineHeight: 3 }}><strong>Tổng:</strong> {(Number(order.totalPrice) || 0).toLocaleString('vi-VN')} đ</Typography>
+                <Typography sx={{ lineHeight: 3 }}><strong>Địa chỉ:</strong> {order.deliveryAddress}</Typography>
               </Box>
 
               <Box mt={2}>
                 <TableContainer component={Paper} elevation={0}>
-                  <Table className="items-table" size="small">
+                  <Table size="small" sx={{ '& th, & td': { padding: '8px 12px', borderBottom: '1px solid #eee' } }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Tên sản phẩm</TableCell>

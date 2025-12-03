@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, TextField } from '@mui/material'
-import Pagination from '@mui/material/Pagination'
-import Stack from '@mui/material/Stack'
 import { getEmployeesAPI, deleteEmployeeAPI, deleteAllEmployeesAPI, getBranchesAPI } from '~/apis/index'
 import EmployeeForm from '~/pages/Admin/Employees/EmployeeForm/EmployeeForm'
 import { toast } from 'react-toastify'
 import { getUserRole } from '~/utils/auth'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 
 export default function Employees() {
@@ -139,7 +130,7 @@ export default function Employees() {
                 const pageItems = filtered.slice(start, start + pageSize)
                 return pageItems.map((emp) => (
                   <TableRow key={emp._id || emp.id}>
-                    <TableCell>{(branches.find(b => b._id === emp.branchesId)?.name) || '-'}</TableCell>
+                    <TableCell align="center">{(branches.find(b => b._id === emp.branchesId)?.name) || '-'}</TableCell>
                     <TableCell align="center">{emp.name}</TableCell>
                     <TableCell align="center">{emp.email}</TableCell>
                     <TableCell align="center">{emp.role}</TableCell>
