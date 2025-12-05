@@ -54,7 +54,7 @@ export default function Footer() {
         </Box>
       </Box>
 
-      <Box sx={{ textAlign: 'center', px: 1.5, fontSize: 15, fontWeight: 600, bgcolor: '#0b8798', color: '#064b61', mt: 2, pt: 2 }}>© 2025 || AquaLife Shop. All rights reserved.</Box>
+      <Box sx={{ textAlign: 'center', px: 1.5, fontSize: 15, fontWeight: 600, bgcolor: '#0b8798', color: '#064b61', mt: 2, pt: 2 }}>© 2025 || AquaLife Shop. Bản quyền thuộc về duycuonggg.</Box>
     </Box>
   )
 }

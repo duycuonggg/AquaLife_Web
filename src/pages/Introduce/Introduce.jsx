@@ -10,7 +10,7 @@ const introduceImg = new URL('~/assets/Introduce.png', import.meta.url).href
 
 
 const team = [
-  { name: 'Nguyễn Duy Cường', role: 'Người sáng lập', avatar: 'https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/434676690_442145844943398_3149193981518289588_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=4tr8qXcr5_YQ7kNvwFUbnpG&_nc_oc=Adla8trB3w-m8zrNLoxYnK_hUFu-4D7Nh0LvJBuoezCPXO46gqfPMH0l9uH4JRsPBn4cvkSxMSVyCR3UExD-QCX2&_nc_zt=23&_nc_ht=scontent.fhan14-5.fna&_nc_gid=xuUBVHH4o1XW_-Z9dfM6LA&oh=00_AfirVei93TE0AWQbU5cbn6bGquToOYrR7a7BnBAbUKB2wA&oe=6924BA75' },
+  { name: 'Nguyễn Duy Cường', role: 'Người sáng lập', avatar: 'https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434676690_442145844943398_3149193981518289588_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=1d2534&_nc_eui2=AeHKukcsVT057eHbcLDUlPOr2U03pAnU7wzZTTekCdTvDHQS1T7vg1HxmvW6f3eCIUHiDiDFydDPK_w4jFZofQwq&_nc_ohc=e568ilH4f8kQ7kNvwEXJ1D4&_nc_oc=AdkvETkp11ZY1NRHmnTGW5HTWJWvuT3XmdMgLoBv1dqg6OhxXC8ivNQaqDLEk4ImRJ1aT87qTcODj73O7rBlAFGx&_nc_zt=24&_nc_ht=scontent.fhan14-5.fna&_nc_gid=tPwxUlCUCfJ5N6zVDbmVkA&oh=00_AfnZnDkl8915cHDS3s6YL3othrnQWg2ahgJXtL735GMFEw&oe=693873F3' },
   { name: 'Trần Thị Dung', role: 'Quản lý chi nhánh Hà Nội', avatar: 'https://kenh14cdn.com/203336854389633024/2024/11/21/photo-1-17321846736181338524201-1732185461479-1732185462752272250093.jpg' },
   { name: 'Nguyễn Ánh Hân', role: 'Quản lý chi nhánh HCM', avatar: 'https://images2.thanhnien.vn/528068263637045248/2024/9/19/5-7-1726770263571270712017.jpg' }
 ]

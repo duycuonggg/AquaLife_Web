@@ -65,14 +65,21 @@ export default function OrderDetail() {
           {loading && !order && <Typography>Đang tải...</Typography>}
           {order && (
             <>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '100px' }}>
-                <Typography sx={{ lineHeight: 3 }}><strong>Mã đơn:</strong> {order._id || order.id}</Typography>
-                <Typography sx={{ lineHeight: 3 }}><strong>Thời gian:</strong> {new Date(order.orderDate).toLocaleString()}</Typography>
-                <Typography sx={{ lineHeight: 3 }}><strong>Trạng thái:</strong> {order.status}</Typography>
-                <Typography sx={{ lineHeight: 3 }}><strong>Tổng:</strong> {(Number(order.totalPrice) || 0).toLocaleString('vi-VN')} đ</Typography>
-                <Typography sx={{ lineHeight: 3 }}><strong>Địa chỉ:</strong> {order.deliveryAddress}</Typography>
+              <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
+                <Typography><strong>Mã đơn:</strong> {order._id || order.id}</Typography>
               </Box>
-
+              <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
+                <Typography><strong>Thời gian:</strong> {new Date(order.orderDate).toLocaleString()}</Typography>
+              </Box>
+              <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
+                <Typography><strong>Trạng thái:</strong> {order.status}</Typography>
+              </Box>
+              <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
+                <Typography><strong>Tổng:</strong> {(Number(order.totalPrice) || 0).toLocaleString('vi-VN')} đ</Typography>
+              </Box>
+              <Box sx={{ borderBottom: '1px solid #e0e0e0', mb: 2, pb: 2 }}>
+                <Typography><strong>Địa chỉ:</strong> {order.deliveryAddress}</Typography>
+              </Box>
               <Box mt={2}>
                 <TableContainer component={Paper} elevation={0}>
                   <Table size="small" sx={{ '& th, & td': { padding: '8px 12px', borderBottom: '1px solid #eee' } }}>
