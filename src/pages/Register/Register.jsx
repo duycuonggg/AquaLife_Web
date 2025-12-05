@@ -51,23 +51,23 @@ const Register = () => {
     const confirmPassword = formData.confirmPassword
 
     if (password !== confirmPassword) {
-      setErrorMsg('Confirm Password does not match.')
+      setErrorMsg('Mật khẩu xác nhận không khớp.')
       return
     }
     // Server requires password min 10 chars (customersModel validation)
     if (password.length < 10) {
-      setErrorMsg('Password must be at least 10 characters.')
+      setErrorMsg('Mật khẩu phải có ít nhất 10 ký tự.')
       return
     }
     // Address must be reasonably long (server requires min 10)
     if (address.length < 10) {
-      setErrorMsg('Address must be at least 10 characters.')
+      setErrorMsg('Địa chỉ phải có ít nhất 10 ký tự.')
       return
     }
     // Phone pattern (basic vietnamese mobile pattern similar to backend)
     const phonePattern = /^(0(3[2-9]|5[2689]|7[06-9]|8[1-689]|9[0-46-9]))\d{7}$/
     if (phone && !phonePattern.test(phone)) {
-      setErrorMsg('Phone number format is invalid.')
+      setErrorMsg('Số điện thoại không hợp lệ.')
       return
     }
 
@@ -115,10 +115,10 @@ const Register = () => {
             {/* Map inputs for concise code; layout handled by CSS grid (.form-grid) */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(260px, 1fr))' }, gap: '12px 16px' }}>
               {[
-                { id: 'fullName', name: 'fullName', label: 'Họ tên', placeholder: 'John Doe', type: 'text', required: true },
-                { id: 'email', name: 'email', label: 'Địa chỉ email', placeholder: 'you@example.com', type: 'email', required: true },
-                { id: 'phone', name: 'phone', label: 'Số điện thoại', placeholder: '0123456789', type: 'tel', required: true },
-                { id: 'address', name: 'address', label: 'Địa chỉ', placeholder: '123 Main St', type: 'text', required: true },
+                { id: 'fullName', name: 'fullName', label: 'Họ tên', placeholder: 'Duy Cường', type: 'text', required: true },
+                { id: 'email', name: 'email', label: 'Địa chỉ email', placeholder: 'duycuong@example.com', type: 'email', required: true },
+                { id: 'phone', name: 'phone', label: 'Số điện thoại', placeholder: '0958258613', type: 'tel', required: true },
+                { id: 'address', name: 'address', label: 'Địa chỉ', placeholder: '123 Hoàng Mai, Hà Nội', type: 'text', required: true },
                 { id: 'password', name: 'password', label: 'Mật khẩu', placeholder: '••••••••', type: showPassword ? 'text' : 'password', required: true, toggle: true },
                 { id: 'confirmPassword', name: 'confirmPassword', label: 'Xác nhận mật khẩu', placeholder: '••••••••', type: 'password', required: true }
               ].map((f) => (
@@ -139,7 +139,7 @@ const Register = () => {
                       '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
                       '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7' },
                       '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7', borderWidth: '1px' },
-                      '& input': { padding: '12px 14px' },
+                      '& input': { padding: '12px 14px' }
                     }}
                     InputProps={f.toggle ? {
                       endAdornment: (

@@ -148,3 +148,13 @@ export const getOrderDetailsAPI = async (orderId) => {
   const response = await client.get('/v1/order-details', { params: { orderId } })
   return response.data
 }
+
+export const getReviewsAPI = async (productId) => {
+  const response = await client.get('/v1/reviews', { params: { product_id: productId } })
+  return response.data
+}
+
+export const createReviewAPI = async (data) => {
+  const response = await client.post('/v1/reviews', data)
+  return response.data
+}

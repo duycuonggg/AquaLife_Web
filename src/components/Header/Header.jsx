@@ -15,6 +15,7 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [types, setTypes] = useState([])
   const [branches, setBranches] = useState([])
+  const [selectedBranchName, setSelectedBranchName] = useState('')
   const [branchAnchor, setBranchAnchor] = useState(null)
   const [count, setCount] = useState(0)
   const [userAnchor, setUserAnchor] = useState(null)
@@ -47,13 +48,36 @@ export default function Header() {
         const b = await getBranchesAPI()
         if (!mounted) return
         setBranches(Array.isArray(b) ? b : [])
+        try {
+          const storedName = localStorage.getItem('selectedBranchName')
+          const storedId = localStorage.getItem('selectedBranch')
+          if (storedName) {
+            setSelectedBranchName(storedName)
+          } else if (storedId) {
+            const found = (Array.isArray(b) ? b : []).find(x => String(x._id || x.id) === String(storedId))
+            if (found) setSelectedBranchName(found.name || '')
+          }
+        } catch (e) {
+          /* ignore storage errors */
+        }
       } catch (err) {
         // eslint-disable-next-line no-console
         console.warn('Failed to load branches', err)
       }
     }
     loadBranches()
-    return () => { mounted = false }
+    // listen to branchSelected events from other parts of the app
+    const onBranchSelected = (ev) => {
+      try {
+        const name = ev?.detail?.name || ''
+        if (name) {
+          setSelectedBranchName(name)
+          try { localStorage.setItem('selectedBranchName', name) } catch (e) { /* ignore */ }
+        }
+      } catch (err) { /* ignore */ }
+    }
+    window.addEventListener('branchSelected', onBranchSelected)
+    return () => { mounted = false; window.removeEventListener('branchSelected', onBranchSelected) }
   }, [])
 
   useEffect(() => {
@@ -82,6 +106,10 @@ export default function Header() {
     try {
       if (id) localStorage.setItem('selectedBranch', id)
       else localStorage.removeItem('selectedBranch')
+      try {
+        if (b && b.name) localStorage.setItem('selectedBranchName', b.name)
+        setSelectedBranchName(b?.name || '')
+      } catch (e) { /* ignore */ }
     } catch (err) {
       // ignore storage errors
     }
@@ -190,7 +218,7 @@ export default function Header() {
           aria-controls={branchAnchor ? 'branch-menu' : undefined}
           aria-haspopup="true"
           onClick={handleOpenBranches}>
-            Chi nhánh
+            {selectedBranchName || 'Chi nhánh'}
           </Button>
           <Button
             component={RouterLink} to="/products"

@@ -45,14 +45,14 @@ export default function Login() {
       const effectiveRole = roleFromToken || user?.role
 
       // If employee/staff/manager/admin, redirect to admin
-      if (effectiveRole && effectiveRole !== 'customer') {
+      if (effectiveRole && (effectiveRole === 'Chủ' || effectiveRole === 'Quản lý' || effectiveRole === 'Nhân viên')) {
         navigate('/admin', { replace: true })
       } else {
         // default redirect (customer) -> homepage/register
         navigate('/', { replace: true })
       }
     } catch (err) {
-      setErrorMsg(err?.response?.data?.message || 'Đăng nhập thất bại, vui lòng thử lại.')
+      setErrorMsg('Đăng nhập thất bại, vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -74,12 +74,12 @@ export default function Login() {
           <form onSubmit={handleSubmit}>
             <Box sx={{ mb: 2 }}>
               <Box component="label" htmlFor="email" sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>Địa chỉ email</Box>
-              <TextField id="email" name="email" type="email" placeholder="you@example.com" variant="outlined" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, '& input': { padding: '12px 14px' } }} />
+              <TextField id="email" name="email" placeholder="duycuong@example.com" type="email" variant="outlined" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, '& input': { padding: '12px 14px' } }} />
             </Box>
 
             <Box sx={{ mb: 2 }}>
               <Box component="label" htmlFor="password" sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>Mật khẩu</Box>
-              <TextField id="password" name="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" variant="outlined" fullWidth required value={password} onChange={(e) => setPassword(e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, '& input': { padding: '12px 14px' } }} InputProps={{ endAdornment: (
+              <TextField id="password" name="password" placeholder='••••••••' type={showPassword ? 'text' : 'password'} variant="outlined" fullWidth required value={password} onChange={(e) => setPassword(e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 }, '& input': { padding: '12px 14px' } }} InputProps={{ endAdornment: (
                 <InputAdornment position="end">
                   <IconButton aria-label="toggle password visibility" onClick={() => setShowPassword(s => !s)} edge="end">{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
                 </InputAdornment>
