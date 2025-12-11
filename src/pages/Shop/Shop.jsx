@@ -130,7 +130,7 @@ export default function Shop() {
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
-      <Box sx={{ maxWidth: 1100, mx: 'auto', p: 3, mt: 10 }}>
+      <Box sx={{ maxWidth: 1100, mx: 'auto', p: 3, mt: 5 }}>
 
         {/* Filters / Search */}
         <Box className="shop-filters" display="flex" gap={2} alignItems="center" mb={10}>
@@ -163,6 +163,7 @@ export default function Shop() {
                   <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
                     <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
+                    {/* eslint-disable-next-line no-console */}
                     <Button variant="contained" size="small" onClick={() => { addToCart(p, 1); try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) } }}>Thêm vào giỏ</Button>
                   </Box>
                 </CardContent>

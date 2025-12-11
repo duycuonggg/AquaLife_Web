@@ -99,6 +99,16 @@ export const deleteAllEmployeesAPI = async () => {
   return response.data
 }
 
+export const getPromosAPI = async () => {
+  const response = await client.get('/v1/promos')
+  return response.data
+}
+
+export const validatePromoAPI = async (code, total) => {
+  const response = await client.post('/v1/promos/validate', { code, total })
+  return response.data
+}
+
 export const updateProductAPI = async (id, data) => {
   const response = await client.put(`/v1/products/${id}`, data)
   return response.data
@@ -158,3 +168,4 @@ export const createReviewAPI = async (data) => {
   const response = await client.post('/v1/reviews', data)
   return response.data
 }
+

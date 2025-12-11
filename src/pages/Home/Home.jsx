@@ -132,7 +132,7 @@ export default function Home() {
       </Box>
 
       {/* Featured Products (minimal view: image, name, price) */}
-      <Box sx={{ maxWidth: 1100, mx: 'auto', p: 1.5, mt: 10 }}>
+      <Box sx={{ maxWidth: 1100, mx: 'auto', p: 1.5, mt: 5 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Sản phẩm nổi bật</Typography>
           <Box sx={{ flex: 1 }} />
@@ -163,7 +163,7 @@ export default function Home() {
       </Box>
 
       {/* Feature icons */}
-      <Box sx={{ mt: 20 }}>
+      <Box sx={{ mt: 10 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
         </Box>
@@ -202,7 +202,7 @@ export default function Home() {
       </Box>
 
       {/* Newsletter signup */}
-      <Box sx={{ mt: 30, mb: 30 }}>
+      <Box sx={{ mt: 20, mb: 10 }}>
         <Box sx={{ textAlign: 'center' }} >
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10, mb: 5 }}>Hãy đăng ký ngay</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 10, textAlign: 'center' }}>Nhận các mẹo chăm sóc bể cá chuyên nghiệp, ưu đãi độc quyền và sản phẩm mới.</Typography>
