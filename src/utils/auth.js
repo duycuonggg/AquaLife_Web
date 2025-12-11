@@ -12,6 +12,6 @@ export function getUserFromToken() {
 }
 
 export function getUserRole() {
-  const u = getUserFromToken()
-  return u?.role || null
+  const user = getUserFromToken()
+  return user?.role || null
 }

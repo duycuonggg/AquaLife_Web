@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, TextField, Button, Card, CardContent, Typography, MenuItem } from '@mui/material'
 import PropTypes from 'prop-types'
-import { createEmployeeAPI, updateEmployeeAPI } from '~/apis/index'
+import { createEmployeeAPI, updateEmployeeAPI, getBranchesAPI } from '~/apis/index'
 
 export default function EmployeeForm({ onSuccess, initialData, onCancel }) {
   const [name, setName] = useState('')
@@ -11,6 +11,8 @@ export default function EmployeeForm({ onSuccess, initialData, onCancel }) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [branches, setBranches] = useState([])
+  const [branchId, setBranchId] = useState('')
 
   useEffect(() => {
     if (initialData) {
@@ -20,8 +22,25 @@ export default function EmployeeForm({ onSuccess, initialData, onCancel }) {
       setRole(initialData.role || 'staff')
       setPassword('')
       setError('')
+      setBranchId(initialData.branchesId || initialData.branchId || '')
     }
   }, [initialData])
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        const b = await getBranchesAPI()
+        if (!mounted) return
+        setBranches(Array.isArray(b) ? b : [])
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to load branches', err)
+      }
+    }
+    load()
+    return () => { mounted = false }
+  }, [])
 
   const reset = () => {
     setName('')
@@ -39,6 +58,10 @@ export default function EmployeeForm({ onSuccess, initialData, onCancel }) {
       setError('Vui lòng điền tên, email và vai trò')
       return
     }
+    if (branchId) {
+      setError('Vui lòng chọn chi nhánh trước khi tạo nhân viên')
+      return
+    }
 
     const payload = { name, email, phone, role }
     if (!initialData && password) payload.password = password
@@ -47,6 +70,7 @@ export default function EmployeeForm({ onSuccess, initialData, onCancel }) {
       return
     }
     if (initialData && password) payload.password = password
+    payload.branchesId = branchId
 
     try {
       setLoading(true)
@@ -78,6 +102,12 @@ export default function EmployeeForm({ onSuccess, initialData, onCancel }) {
             <MenuItem value="admin">Admin</MenuItem>
             <MenuItem value="manager">Manager</MenuItem>
             <MenuItem value="staff">Staff</MenuItem>
+          </TextField>
+          <TextField select label="Chi nhánh" value={branchId} onChange={(e) => setBranchId(e.target.value)} sx={{ gridColumn: '1 / -1', maxWidth: 360 }}>
+            <MenuItem value="">-- Chọn chi nhánh --</MenuItem>
+            {branches.map((b) => (
+              <MenuItem key={b._id || b.id} value={b._id || b.id}>{b.name || (`Chi nhánh ${b._id || b.id}`)}</MenuItem>
+            ))}
           </TextField>
 
           <TextField label="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} type="password" sx={{ gridColumn: '1 / -1' }} helperText={initialData ? 'Để trống nếu không đổi mật khẩu' : ''} />

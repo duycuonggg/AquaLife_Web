@@ -1,21 +1,15 @@
-import { Box, Typography, Grid, Button, Avatar } from '@mui/material'
+import { Box, Typography, Grid, Button } from '@mui/material'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
 import PublicIcon from '@mui/icons-material/Public'
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
-// styles migrated from Introduce.css into MUI `sx` props
 const introduceImg = new URL('~/assets/Introduce.png', import.meta.url).href
 
-
-const team = [
-  { name: 'Nguyễn Duy Cường', role: 'Người sáng lập', avatar: 'https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-1/434676690_442145844943398_3149193981518289588_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=109&ccb=1-7&_nc_sid=1d2534&_nc_eui2=AeHKukcsVT057eHbcLDUlPOr2U03pAnU7wzZTTekCdTvDHQS1T7vg1HxmvW6f3eCIUHiDiDFydDPK_w4jFZofQwq&_nc_ohc=e568ilH4f8kQ7kNvwEXJ1D4&_nc_oc=AdkvETkp11ZY1NRHmnTGW5HTWJWvuT3XmdMgLoBv1dqg6OhxXC8ivNQaqDLEk4ImRJ1aT87qTcODj73O7rBlAFGx&_nc_zt=24&_nc_ht=scontent.fhan14-5.fna&_nc_gid=tPwxUlCUCfJ5N6zVDbmVkA&oh=00_AfnZnDkl8915cHDS3s6YL3othrnQWg2ahgJXtL735GMFEw&oe=693873F3' },
-  { name: 'Trần Thị Dung', role: 'Quản lý chi nhánh Hà Nội', avatar: 'https://kenh14cdn.com/203336854389633024/2024/11/21/photo-1-17321846736181338524201-1732185461479-1732185462752272250093.jpg' },
-  { name: 'Nguyễn Ánh Hân', role: 'Quản lý chi nhánh HCM', avatar: 'https://images2.thanhnien.vn/528068263637045248/2024/9/19/5-7-1726770263571270712017.jpg' }
-]
-
 export default function Introduce() {
+
+
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
@@ -83,22 +77,6 @@ export default function Introduce() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}><Typography variant="h5" sx={{ fontWeight: 800, color: '#0aa5c2' }}>500+</Typography><Typography variant="caption">Sản phẩm</Typography></Box>
               </Box>
             </Grid>
-          </Grid>
-        </Box>
-
-        {/* Team */}
-        <Box sx={{ mt: { xs: 8, md: 25 }, maxWidth: 1100, mx: 'auto', px: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10 }}>Đội ngũ của chúng tôi</Typography>
-          <Grid container spacing={3}>
-            {team.map((m) => (
-              <Grid item xs={12} sm={4} key={m.name}>
-                <Box sx={{ background: '#fff', borderRadius: 2, p: 2.5, boxShadow: '0 6px 18px rgba(0,0,0,0.04)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <Avatar sx={{ width: 80, height: 80, mb: 2 }} src={m.avatar}>{m.name[0]}</Avatar>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>{m.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">{m.role}</Typography>
-                </Box>
-              </Grid>
-            ))}
           </Grid>
         </Box>
 

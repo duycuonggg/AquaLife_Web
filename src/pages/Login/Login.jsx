@@ -45,7 +45,7 @@ export default function Login() {
       const effectiveRole = roleFromToken || user?.role
 
       // If employee/staff/manager/admin, redirect to admin
-      if (effectiveRole && (effectiveRole === 'Chủ' || effectiveRole === 'Quản lý' || effectiveRole === 'Nhân viên')) {
+      if (effectiveRole && effectiveRole !== 'customer') {
         navigate('/admin', { replace: true })
       } else {
         // default redirect (customer) -> homepage/register
