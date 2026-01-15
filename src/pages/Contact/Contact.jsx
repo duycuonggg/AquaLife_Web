@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { Box, Typography, Grid, TextField, Button, Card, CardContent } from '@mui/material'
-import EmailIcon from '@mui/icons-material/Email'
-import PhoneIcon from '@mui/icons-material/Phone'
-import LocationOnIcon from '@mui/icons-material/LocationOn'
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
-// styles migrated from Contact.css into MUI `sx` props
-import { getHeadquaterAPI, getBranchesAPI } from '~/apis'
-import { useEffect } from 'react'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
@@ -32,34 +26,6 @@ export default function Contact() {
       setSending(false)
     }
   }
-
-  const [branches, setBranches] = useState([])
-
-  const [hq, setHq] = useState(null)
-
-  useEffect(() => {
-    let mounted = true
-    ;(async () => {
-      try {
-        const data = await getHeadquaterAPI()
-        if (!mounted) return
-        // backend returns the headquater document directly
-        setHq(data)
-      } catch (err) {
-        // ignore
-      }
-    })()
-    ;(async () => {
-      try {
-        const b = await getBranchesAPI()
-        if (!mounted) return
-        setBranches(Array.isArray(b) ? b : [])
-      } catch (err) {
-        // ignore
-      }
-    })()
-    return () => { mounted = false }
-  }, [])
 
   return (
     <Box>
@@ -102,44 +68,8 @@ export default function Contact() {
               </CardContent>
             </Card>
           </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ background: '#fff', p: 2.25, borderRadius: 1.25, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Box sx={{ width: 42, height: 42, background: 'rgba(10,165,194,0.08)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0aa5c2', mb: 1 }}><EmailIcon /></Box>
-                <Typography variant="subtitle1">Email</Typography>
-                <Typography variant="body2" color="text.secondary">{hq?.email || 'support@aqualife.vn'}</Typography>
-              </Box>
-
-              <Box sx={{ background: '#fff', p: 2.25, borderRadius: 1.25, boxShadow: '0 10px 30px rgba(2,6,23,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Box sx={{ width: 42, height: 42, background: 'rgba(10,165,194,0.08)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0aa5c2', mb: 1 }}><PhoneIcon /></Box>
-                <Typography variant="subtitle1">Gọi cho chúng tôi</Typography>
-                <Typography variant="body2" color="text.secondary">{hq?.phone || '0912 345 678'}</Typography>
-              </Box>
-            </Box>
-          </Grid>
         </Grid>
 
-        <Box sx={{ mt: 6 }}>
-          <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mb: 10, mt: 20 }}>Các cửa hàng của chúng tôi</Typography>
-          <Grid container spacing={3}>
-            {(branches.length ? branches : []).map((l) => (
-              <Grid item xs={12} md={4} key={l._id || l.title || l.address}>
-                <Card sx={{ borderRadius: 3, boxShadow: '0 18px 40px rgba(2,6,23,0.06)', height: 150 }}>
-                  <CardContent>
-                    <Box display="flex" alignItems="center" gap={2} mb={1}>
-                      <Box sx={{ width: 36, height: 36, background: 'rgba(10,165,194,0.06)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0aa5c2' }}><LocationOnIcon /></Box>
-                      <Typography variant="h6">{l.name || l.title}</Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">{l.address}</Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>{l.phone}</Typography>
-                    <Typography variant="caption" display="block" sx={{ mt: 1, color: '#666' }}>{l.hours || ''}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
       </Box>
 
       <Footer />

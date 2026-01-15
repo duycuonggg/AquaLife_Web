@@ -1,26 +1,8 @@
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Line,
-  ComposedChart
-} from 'recharts'
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend, Line, ComposedChart } from 'recharts'
 import { Select, MenuItem, FormControl, InputLabel, Grid, Card, CardContent, Box, Typography } from '@mui/material'
-import {
-  Inventory as InventoryIcon,
-  People as PeopleIcon,
-  Person as PersonIcon
-} from '@mui/icons-material'
-import { getBranchesAPI, getOrdersAPI, getEmployeesAPI, getProductsAPI, getCustomersAPI } from '~/apis/index'
+import { Inventory as InventoryIcon, People as PeopleIcon, Person as PersonIcon } from '@mui/icons-material'
+import { getOrdersAPI, getProductsAPI, getCustomersAPI } from '~/apis/index'
 import { useEffect, useState } from 'react'
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
 
@@ -36,7 +18,7 @@ export default function Dashboard() {
     const load = async () => {
       setLoading(true)
       try {
-        const [data, orders, employees, products, customers] = await Promise.all([getBranchesAPI(), getOrdersAPI(), getEmployeesAPI(), getProductsAPI(), getCustomersAPI()])
+        const [data, orders, employees, products, customers] = await Promise.all([getOrdersAPI(), getProductsAPI(), getCustomersAPI()])
         // compute per-branch aggregates from orders
         const ordersByBranch = {}
           ; (orders || []).forEach(o => {

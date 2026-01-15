@@ -5,7 +5,7 @@ import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
 import PublicIcon from '@mui/icons-material/Public'
 import Header from '~/components/Header/Header'
 import Footer from '~/components/Footer/Footer'
-const introduceImg = new URL('~/assets/Introduce.png', import.meta.url).href
+import introduceImg from '~/assets/Introduce.png'
 
 export default function Introduce() {
 

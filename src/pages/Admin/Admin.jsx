@@ -3,14 +3,12 @@ import { Box, AppBar, Toolbar, Typography, Button, Tabs, Tab } from '@mui/materi
 import {
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
-  People as PeopleIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
 import { useLocation } from 'react-router-dom'
 import logo from '~/assets/logo.png'
 import Products from '~/pages/Admin/Products/Products'
 import Customers from '~/pages/Admin/Customers/Customers'
-import Employees from '~/pages/Admin/Employees/Employees'
 import AdminOrders from '~/pages/Admin/AdminOrders/AdminOrders.jsx'
 import checkout from '~/assets/checkout.png'
 import Dashboard from '~/pages/Admin/Dashboard/Dashboard'
@@ -33,12 +31,9 @@ export default function Admin() {
     } else if (path.includes('/admin/orders')) {
       setSection('orders')
       setTabIndex(2)
-    } else if (path.includes('/admin/employees')) {
-      setSection('employees')
-      setTabIndex(3)
     } else if (path.includes('/admin/customers')) {
       setSection('customers')
-      setTabIndex(4)
+      setTabIndex(3)
     } else {
       setSection('dashboard')
       setTabIndex(0)
@@ -88,7 +83,6 @@ export default function Admin() {
             <Tab icon={<DashboardIcon />} label="Tổng quan" />
             <Tab icon={<InventoryIcon />} label="Sản phẩm" />
             <Tab icon={<ReceiptLongIcon />} label="Đơn hàng" />
-            <Tab icon={<PeopleIcon />} label="Nhân viên" />
             <Tab icon={<PersonIcon />} label="Khách hàng" />
           </Tabs>
         </Box>
@@ -108,12 +102,6 @@ export default function Admin() {
         {section === 'orders' && (
           <Box>
             <AdminOrders />
-          </Box>
-        )}
-
-        {section === 'employees' && (
-          <Box>
-            <Employees />
           </Box>
         )}
 

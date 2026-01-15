@@ -71,14 +71,14 @@ export default function ProductDetail() {
     }
 
     const currentId = product._id || product.id
-    const prodType = product.type || null
-    const prodCategory = product.category || null
+    const prodType = product.product_type || null
+    const prodCategory = product.category_id || null
     const prodTags = Array.isArray(product.tags) ? product.tags.map(String) : []
 
     const scored = (products || []).filter(p => (p._id || p.id) !== currentId).map(p => {
       let score = 0
-      if (prodType && p.type && String(p.type) === String(prodType)) score += 3
-      if (prodCategory && p.category && String(p.category) === String(prodCategory)) score += 2
+      if (prodType && p.product_type && String(p.product_type) === String(prodType)) score += 3
+      if (prodCategory && p.category_id && String(p.category_id) === String(prodCategory)) score += 2
       if (prodTags.length && Array.isArray(p.tags)) {
         const common = p.tags.map(String).filter(t => prodTags.includes(t)).length
         score += common
@@ -89,8 +89,8 @@ export default function ProductDetail() {
     // sort by score desc, then by name
     scored.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score
-      const an = (a.item.name || '').toLowerCase()
-      const bn = (b.item.name || '').toLowerCase()
+      const an = (a.item.product_name || '').toLowerCase()
+      const bn = (b.item.product_name || '').toLowerCase()
       return an < bn ? -1 : an > bn ? 1 : 0
     })
 
@@ -153,18 +153,18 @@ export default function ProductDetail() {
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Box sx={{ borderRadius: '8px', overflow: 'hidden', background: '#f8fafc' }}>
-              <Box sx={{ height: { xs: 360, md: 460 }, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${product.imageUrl || ''})` }} />
+              <Box sx={{ height: { xs: 360, md: 460 }, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${product.image_url || ''})` }} />
             </Box>
             <Box display="flex" gap={2} mt={2}>
-              {((product.thumbnails && product.thumbnails.length) ? product.thumbnails : [product.imageUrl]).map((t, i) => (
+              {((product.thumbnails && product.thumbnails.length) ? product.thumbnails : [product.image_url]).map((t, i) => (
                 <Box key={i} sx={{ width: { xs: 64, md: 80 }, height: { xs: 48, md: 60 }, borderRadius: '6px', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', backgroundImage: `url(${t || ''})` }} />
               ))}
             </Box>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>{product.name}</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{product.shortDescription || product.description || ''}</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>{product.product_name}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{product.description || ''}</Typography>
 
             <Typography variant="h4" sx={{ color: '#d32f2f', fontWeight: 700, mt: 3 }}>{(Number(product.price) || 0).toLocaleString('vi-VN')} đ</Typography>
 
@@ -196,7 +196,7 @@ export default function ProductDetail() {
             </Box>
             <Box sx={{ display: 'flex', mt: 4, alignItems: 'center' }}>
               <Typography>Số lượng:</Typography>
-              <Typography variant="contained" sx={{ backgroundColor: '#7f8c8d', p: 1, borderRadius: 5, ml: 2 }}>{product.quantity}</Typography>
+              <Typography variant="contained" sx={{ backgroundColor: '#7f8c8d', p: 1, borderRadius: 5, ml: 2 }}>{product.stock_quantity}</Typography>
             </Box>
             <Box sx={{ display: 'flex', mt: 2, alignItems: 'center' }}>
               <Typography>Tình trạng:</Typography>
@@ -280,9 +280,9 @@ export default function ProductDetail() {
               <Grid item xs={12} sm={6} md={3} key={r._id || r.id}>
                 <Card>
                   <RouterLink to={`/products/${r._id || r.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Box sx={{ height: 120, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${r.imageUrl || ''})` }} />
+                    <Box sx={{ height: 120, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${r.image_url || ''})` }} />
                     <CardContent>
-                      <Typography sx={{ fontWeight: 700 }}>{r.name}</Typography>
+                      <Typography sx={{ fontWeight: 700 }}>{r.product_name}</Typography>
                       <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(r.price) || 0).toLocaleString('vi-VN')} đ</Typography>
                     </CardContent>
                   </RouterLink>

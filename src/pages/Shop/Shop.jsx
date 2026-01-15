@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { Box, Grid, Card, CardContent, Button, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Pagination, Stack } from '@mui/material'
 import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
@@ -15,7 +15,6 @@ export default function Shop() {
   const [typeFilter, setTypeFilter] = useState('')
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
-  const [branchFilter, setBranchFilter] = useState('')
 
   const location = useLocation()
 
@@ -32,79 +31,28 @@ export default function Shop() {
     load()
   }, [])
 
-  const navigate = useNavigate()
-
   // initialize type filter from query param if present
   useEffect(() => {
     const paramsQ = new URLSearchParams(location.search)
     const t = paramsQ.get('type') || ''
     if (t) setTypeFilter(t)
-    const b = paramsQ.get('branch') || ''
-    if (b) setBranchFilter(b)
-    else {
-      // if no branch query param, try to read persisted selection from localStorage
-      try {
-        const saved = localStorage.getItem('selectedBranch') || ''
-        if (saved) setBranchFilter(saved)
-      } catch (err) {
-        // ignore
-      }
-    }
   }, [location.search])
-
-  // listen for branchSelected events (dispatched by Header) so filtering works across pages
-  useEffect(() => {
-    const onBranch = (e) => {
-      const id = e?.detail?.id || ''
-      setBranchFilter(id)
-      try {
-        // persist selection so future pages / reloads also know about it
-        if (id) localStorage.setItem('selectedBranch', id)
-        else localStorage.removeItem('selectedBranch')
-        const params = new URLSearchParams(location.search)
-        if (id) params.set('branch', id)
-        else params.delete('branch')
-        const search = params.toString() ? `?${params.toString()}` : ''
-        navigate(`${location.pathname}${search}`, { replace: true })
-      } catch (err) {
-        // ignore
-      }
-    }
-    window.addEventListener('branchSelected', onBranch)
-    return () => window.removeEventListener('branchSelected', onBranch)
-  }, [location.search, location.pathname, navigate])
 
   // reset to first page whenever filters/search change
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm, typeFilter, minPrice, maxPrice, branchFilter])
+  }, [searchTerm, typeFilter, minPrice, maxPrice])
 
   // compute filtered products and pagination
   const filteredProducts = (products || []).filter((p) => {
     const q = searchTerm.trim().toLowerCase()
     if (q) {
-      const inName = (p.name || '').toLowerCase().includes(q)
-      const inType = (p.type || '').toLowerCase().includes(q)
+      const inName = (p.product_name || '').toLowerCase().includes(q)
+      const inType = (p.product_type || '').toLowerCase().includes(q)
       if (!inName && !inType) return false
     }
-    // branch filtering
-    if (branchFilter) {
-      const id = String(branchFilter)
-      if (!p) return false
-      if (p.branchesId && String(p.branchesId) === id) {
-        // matched
-      } else if (Array.isArray(p.branchesId) && p.branchesId.map(x => String(x)).includes(id)) {
-        // matched
-      } else if (Array.isArray(p.stockByBranch)) {
-        if (!p.stockByBranch.find(sb => String(sb.branch || sb.branchesId || sb.branchId) === id)) return false
-      } else if (p.branchId && String(p.branchId) === id) {
-        // matched
-      } else {
-        return false
-      }
-    }
     if (typeFilter) {
-      if ((p.type || '') !== typeFilter) return false
+      if ((p.product_type || '') !== typeFilter) return false
     }
     const price = Number(p.price) || 0
     if (minPrice !== '') {
@@ -140,7 +88,7 @@ export default function Shop() {
             <InputLabel>Danh mục</InputLabel>
             <Select label="Danh mục" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
               <MenuItem value="">Tất cả</MenuItem>
-              {[...new Set((products || []).map(p => p.type).filter(Boolean))].map((t) => (
+              {[...new Set((products || []).map(p => p.product_type).filter(Boolean))].map((t) => (
                 <MenuItem key={t} value={t}>{t}</MenuItem>
               ))}
             </Select>
@@ -157,10 +105,10 @@ export default function Shop() {
             <Grid item xs={12} sm={6} md={3} key={p._id || p.id}>
               <Card sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: '0 12px 30px rgba(16,24,32,0.08)', height: '100%' }}>
                 <RouterLink to={`/products/${p._id || p.id}`}>
-                  <Box sx={{ width: '100%', height: { xs: 180, md: 220 }, backgroundImage: `url(${p.imageUrl || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', display: 'block' }} />
+                  <Box sx={{ width: '100%', height: { xs: 180, md: 220 }, backgroundImage: `url(${p.image_url || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', display: 'block' }} />
                 </RouterLink>
                 <CardContent>
-                  <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
+                  <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.product_name}</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
                     <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
                     {/* eslint-disable-next-line no-console */}

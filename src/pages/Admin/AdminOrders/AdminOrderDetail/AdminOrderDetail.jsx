@@ -22,7 +22,7 @@ export default function AdminOrderDetail({ open, orderId, onClose }) {
           try {
             const pid = (d.productsId && (d.productsId._id || d.productsId.toString)) ? (d.productsId._id || d.productsId.toString()) : String(d.productsId)
             const p = await getProductAPI(pid)
-            return { ...d, productName: p?.name, productImage: p?.imageUrl || p?.image }
+            return { ...d, productName: p?.product_name, productImage: p?.image_url || p?.image }
           } catch (err) {
             return d
           }

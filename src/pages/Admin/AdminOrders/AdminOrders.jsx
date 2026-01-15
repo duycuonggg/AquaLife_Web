@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Pagination, IconButton, TextField } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AdminOrderDetail from './AdminOrderDetail/AdminOrderDetail'
 // AdminOrders.css was empty — styles handled via MUI `sx` props
-import { getOrdersAPI, getBranchesAPI, getCustomersAPI, updateOrderAPI } from '~/apis/index'
+import { getOrdersAPI, updateOrderAPI } from '~/apis/index'
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([])
-  const [branches, setBranches] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -19,8 +18,7 @@ export default function AdminOrders() {
       const normalized = Array.isArray(items) ? items.map((o) => ({
         ...o,
         __id: idToStr(o._id || o.id),
-        __customersId: idToStr(o.customersId),
-        __branchesId: idToStr(o.branchesId)
+        __customersId: idToStr(o.customersId)
       })) : []
       setOrders(normalized)
     } catch (err) {
@@ -28,31 +26,6 @@ export default function AdminOrders() {
       console.error('Failed to load orders', err)
     }
   }
-
-  const loadBranches = async () => {
-    try {
-      const b = await getBranchesAPI()
-      setBranches(Array.isArray(b) ? b : [])
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.warn('Failed to load branches', err)
-    }
-  }
-
-  const [customers, setCustomers] = useState([])
-  const loadCustomers = async () => {
-    try {
-      const c = await getCustomersAPI()
-      const normalized = Array.isArray(c) ? c.map((cu) => ({ ...cu, __id: idToStr(cu._id || cu.id) })) : []
-      setCustomers(normalized)
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.warn('Failed to load customers', err)
-    }
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { load(); loadBranches(); loadCustomers() }, [])
 
   const [selectedOrderId, setSelectedOrderId] = useState(null)
   const openDetail = (id) => setSelectedOrderId(id)
@@ -93,7 +66,6 @@ export default function AdminOrders() {
         <Table size="small">
           <TableHead sx={{ backgroundColor: '#0b8798' }}>
             <TableRow>
-              <TableCell align="center">Chi nhánh</TableCell>
               <TableCell align="center">Mã đơn</TableCell>
               <TableCell align="center">Khách hàng</TableCell>
               <TableCell align="center">Thời gian</TableCell>
@@ -105,13 +77,7 @@ export default function AdminOrders() {
           <TableBody>
             {shown.map((o) => (
               <TableRow key={o._id || o.id}>
-                <TableCell align="center">{branches.find(b => (b._id || b.id) === (o.branchesId || ''))?.name || '-'}</TableCell>
                 <TableCell align="center">{o._id || o.id}</TableCell>
-                <TableCell align="center">{(() => {
-                  const found = customers.find(c => c.__id === o.__customersId)
-                  return found?.name || o.name || o.customerName || '-'
-                })()}
-                </TableCell>
                 <TableCell align="center">{new Date(o.orderDate).toLocaleString()}</TableCell>
                 <TableCell align="center">{o.status}</TableCell>
                 <TableCell align="center" sx={{ fontWeight: 700, color: '#d32f2f' }}>{(Number(o.totalPrice) || 0).toLocaleString('vi-VN')} đ</TableCell>
