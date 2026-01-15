@@ -196,15 +196,15 @@ export default function Header() {
           ) : (
             <Button
               component={RouterLink}
-              to="/login"
+              to="/RegisterAndLogin"
               variant="text"
               sx={{
                 color: '#000',
                 textTransform: 'none',
-                fontWeight: 500,
+                fontWeight: 600,
                 '&:hover': { color: '#0b8798' }
               }}>
-              Đăng nhập
+              Đăng ký
             </Button>
           )}
         </Box>
