@@ -5,10 +5,10 @@ import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-const heroImg = new URL('~/assets/Banner.png', import.meta.url).href
-const banner1 = new URL('~/assets/banner1.png', import.meta.url).href
-const banner2 = new URL('~/assets/banner2.png', import.meta.url).href
-const banner3 = new URL('~/assets/banner3.png', import.meta.url).href
+import Banner from '~/assets/Banner.png'
+import banner1 from '~/assets/banner1.png'
+import banner2 from '~/assets/banner2.png'
+import banner3 from '~/assets/banner3.png'
 import Footer from '~/components/Footer/Footer'
 import Header from '~/components/Header/Header'
 import productreturn from '~/assets/productreturn.png'
@@ -92,7 +92,7 @@ export default function Home() {
           onMouseLeave={() => setPaused(false)}
           sx={{
             width: '100%',
-            backgroundImage: `url(${banners[bannerIndex] || heroImg})`,
+            backgroundImage: `url(${banners[bannerIndex] || Banner})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
@@ -142,15 +142,15 @@ export default function Home() {
           {(featured || []).filter(p => {
             if (!search) return true
             const q = search.toLowerCase()
-            return (p.name || '').toLowerCase().includes(q) || (p.type || '').toLowerCase().includes(q)
+            return (p.product_name || '').toLowerCase().includes(q) || (p.product_type || '').toLowerCase().includes(q)
           }).map((p) => (
             <Grid item xs={6} sm={4} md={3} key={p._id || p.id}>
               <Card sx={{ borderRadius: 1, background: '#fff', boxShadow: '0 6px 18px rgba(16,24,32,0.06)' }}>
                 <RouterLink to={`/products/${p._id || p.id}`}>
-                  <Box sx={{ width: '100%', height: 140, backgroundImage: `url(${p.imageUrl || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 1 }} />
+                  <Box sx={{ width: '100%', height: 140, backgroundImage: `url(${p.image_url || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 1 }} />
                 </RouterLink>
                 <CardContent>
-                  <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.name}</Typography>
+                  <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.product_name}</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
                     <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
                     <Button variant="contained" size="small" onClick={() => { addToCart(p, 1); try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) } }}>Thêm vào giỏ</Button>

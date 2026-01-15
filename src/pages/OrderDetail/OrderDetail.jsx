@@ -36,7 +36,7 @@ export default function OrderDetail() {
             const p = await getProductAPI(prodId)
             // eslint-disable-next-line no-console
             console.log('Product fetched', prodId, p)
-            return { ...d, productName: p?.name, productImage: p?.imageUrl || p?.image }
+            return { ...d, productName: p?.product_name, productImage: p?.image_url || p?.image }
           } catch (err) {
             // eslint-disable-next-line no-console
             console.error('Failed fetching product for', prodId, err?.response?.status || err?.message || err)

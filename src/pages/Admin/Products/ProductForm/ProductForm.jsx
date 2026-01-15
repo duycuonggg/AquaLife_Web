@@ -1,88 +1,75 @@
 import { useState, useEffect } from 'react'
-// import Box from '@mui/material/Box'
-// import TextField from '@mui/material/TextField'
-// import Button from '@mui/material/Button'
-// import Card from '@mui/material/Card'
-// import CardContent from '@mui/material/CardContent'
-// import Typography from '@mui/material/Typography'
-// import MenuItem from '@mui/material/MenuItem'
 import { Box, TextField, Button, Card, CardContent, Typography, MenuItem } from '@mui/material'
 import PropTypes from 'prop-types'
-import { createProductAPI, updateProductAPI, getBranchesAPI } from '~/apis/index'
+import { createProductAPI, updateProductAPI, getCategoriesAPI } from '~/apis/index'
 
 export default function ProductForm({ onSuccess, initialData, onCancel }) {
-  const [name, setName] = useState('')
-  const [type, setType] = useState('')
+  const [productName, setProductName] = useState('')
+  const [productType, setProductType] = useState('')
+  const [categoryId, setCategoryId] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
-  const [quantity, setQuantity] = useState('')
-  const [branches, setBranches] = useState([])
-  const [branchId, setBranchId] = useState('')
+  const [stockQuantity, setStockQuantity] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [status, setStatus] = useState('available')
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const cats = await getCategoriesAPI()
+        setCategories(Array.isArray(cats) ? cats : [])
+      } catch (err) {
+        console.error('Failed to load categories', err)
+      }
+    }
+    loadCategories()
+  }, [])
+
+  useEffect(() => {
     if (initialData) {
-      setName(initialData.name || '')
-      setType(initialData.type || '')
+      setProductName(initialData.product_name || '')
+      setProductType(initialData.product_type || '')
+      setCategoryId(initialData.category_id || '')
       setDescription(initialData.description || '')
       setPrice(initialData.price != null ? String(initialData.price) : '')
-      setQuantity(initialData.quantity != null ? String(initialData.quantity) : '')
-      setImageUrl(initialData.imageUrl || '')
+      setStockQuantity(initialData.stock_quantity != null ? String(initialData.stock_quantity) : '')
+      setImageUrl(initialData.image_url || '')
       setStatus(initialData.status || 'available')
-      setBranchId(initialData.branchesId || initialData.branchId || '')
       setError('')
     }
   }, [initialData])
 
-  useEffect(() => {
-    let mounted = true
-    const load = async () => {
-      try {
-        const b = await getBranchesAPI()
-        if (!mounted) return
-        setBranches(Array.isArray(b) ? b : [])
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to load branches', err)
-      }
-    }
-    load()
-    return () => { mounted = false }
-  }, [])
-
   const reset = () => {
-    setName('')
+    setProductName('')
+    setProductType('')
+    setCategoryId('')
     setDescription('')
     setPrice('')
-    setQuantity('')
+    setStockQuantity('')
     setImageUrl('')
+    setStatus('available')
     setError('')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (!name || !price || !type || !description || !imageUrl) {
-      setError('Vui lòng điền đầy đủ: tên, loại, mô tả, giá và ảnh')
-      return
-    }
-    if (!branchId) {
-      setError('Vui lòng chọn chi nhánh trước khi tạo sản phẩm')
+    if (!productName || !price || !productType || !imageUrl) {
+      setError('Vui lòng điền đầy đủ: tên, loại, giá và ảnh')
       return
     }
 
     const payload = {
-      // match backend validation keys
-      name,
-      type,
+      product_name: productName,
+      product_type: productType,
+      category_id: categoryId || undefined,
       price: Number(price),
-      quantity: quantity ? Number(quantity) : 0,
-      branchesId: branchId,
+      stock_quantity: stockQuantity ? Number(stockQuantity) : 0,
       description,
-      imageUrl,
+      image_url: imageUrl,
       status
     }
 
@@ -95,7 +82,6 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
       } else {
         res = await createProductAPI(payload)
       }
-      // call optional callback so parent can refresh list
       if (onSuccess) onSuccess(res)
       reset()
     } catch (err) {
@@ -109,28 +95,35 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
     <Card>
       <CardContent>
         <Box component="form" onSubmit={handleSubmit} display="grid" gap={2} sx={{ gridTemplateColumns: '1fr 1fr' }}>
-          <TextField label="Tên sản phẩm" value={name} onChange={(e) => setName(e.target.value)} required sx={{ gridColumn: '1 / 2' }} />
-          <TextField label="Loại" value={type} onChange={(e) => setType(e.target.value)} required sx={{ gridColumn: '2 / 3' }} />
+          <TextField label="Tên sản phẩm" value={productName} onChange={(e) => setProductName(e.target.value)} required sx={{ gridColumn: '1 / 2' }} />
+          <TextField select label="Loại sản phẩm" value={productType} onChange={(e) => setProductType(e.target.value)} required sx={{ gridColumn: '2 / 3' }}>
+            <MenuItem value="">Chọn loại</MenuItem>
+            <MenuItem value="fish">Cá</MenuItem>
+            <MenuItem value="aquarium">Bể cá</MenuItem>
+            <MenuItem value="accessory">Phụ kiện</MenuItem>
+            <MenuItem value="food">Thức ăn</MenuItem>
+            <MenuItem value="plant">Cây thủy sinh</MenuItem>
+          </TextField>
 
-          <TextField label="Mô tả" value={description} onChange={(e) => setDescription(e.target.value)} multiline rows={3} required sx={{ gridColumn: '1 / -1' }} />
-
-          <TextField label="Giá (VNĐ)" value={price} onChange={(e) => setPrice(e.target.value)} type="number" required sx={{ gridColumn: '1 / 2' }} />
-          <TextField label="Số lượng" value={quantity} onChange={(e) => setQuantity(e.target.value)} type="number" sx={{ gridColumn: '2 / 3' }} />
-
-          <TextField select label="Chi nhánh" value={branchId} onChange={(e) => setBranchId(e.target.value)} sx={{ gridColumn: '1 / -1', maxWidth: 360 }}>
-            <MenuItem value="">-- Chọn chi nhánh --</MenuItem>
-            {branches.map((b) => (
-              <MenuItem key={b._id || b.id} value={b._id || b.id}>{b.name || (`Chi nhánh ${b._id || b.id}`)}</MenuItem>
+          <TextField select label="Danh mục" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} sx={{ gridColumn: '1 / 2' }}>
+            <MenuItem value="">Không chọn</MenuItem>
+            {categories.map((cat) => (
+              <MenuItem key={cat._id || cat.id} value={cat._id || cat.id}>{cat.category_name}</MenuItem>
             ))}
           </TextField>
 
-          <TextField label="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required sx={{ gridColumn: '1 / -1' }} />
-
-          <TextField select label="Tình trạng" value={status} onChange={(e) => setStatus(e.target.value)} sx={{ gridColumn: '1 / -1', maxWidth: 260 }}>
+          <TextField select label="Tình trạng" value={status} onChange={(e) => setStatus(e.target.value)} sx={{ gridColumn: '2 / 3' }}>
             <MenuItem value="available">Còn hàng</MenuItem>
             <MenuItem value="out_of_stock">Hết hàng</MenuItem>
             <MenuItem value="discontinued">Ngừng kinh doanh</MenuItem>
           </TextField>
+
+          <TextField label="Mô tả" value={description} onChange={(e) => setDescription(e.target.value)} multiline rows={3} sx={{ gridColumn: '1 / -1' }} />
+
+          <TextField label="Giá (VNĐ)" value={price} onChange={(e) => setPrice(e.target.value)} type="number" required sx={{ gridColumn: '1 / 2' }} />
+          <TextField label="Số lượng tồn kho" value={stockQuantity} onChange={(e) => setStockQuantity(e.target.value)} type="number" sx={{ gridColumn: '2 / 3' }} />
+
+          <TextField label="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required sx={{ gridColumn: '1 / -1' }} />
 
           {imageUrl && (
             <Box sx={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center', mt: 1 }}>

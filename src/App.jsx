@@ -5,7 +5,6 @@ import Login from '~/pages/Login/Login'
 import Admin from '~/pages/Admin/Admin'
 import Shop from '~/pages/Shop/Shop'
 import ProductDetail from '~/pages/ProductDetail/ProductDetail'
-import Employees from '~/pages/Admin/Employees/Employees'
 import Cart from '~/pages/Cart/Cart'
 import Home from '~/pages/Home/Home'
 import Introduce from '~/pages/Introduce/Introduce'
@@ -33,9 +32,7 @@ export default function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/products" element={<Admin />} />
         <Route path="/admin/orders" element={<Admin />} />
-        <Route path="/admin/employees" element={<Admin />} />
         <Route path="/admin/customers" element={<Admin />} />
-        <Route path="/employees" element={<Employees />} />
       </Routes>
     </BrowserRouter>
   )
