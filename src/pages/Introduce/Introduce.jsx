@@ -18,8 +18,8 @@ export default function Introduce() {
         {/* Hàng tính năng */}
         <Box sx={{ py: { xs: 6, md: 10 }, textAlign: 'center' }}>
           <Box sx={{ maxWidth: 1000, mx: 'auto', p: 2.5 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 5, mt: 5, color: '#0b8798' }}>AquaLife</Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 5, mt: 5 }}>Nơi nuôi dưỡng đam mê thủy sinh — chất lượng, tận tâm, bền vững.</Typography>
+            <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 3, mt: 3, color: '#0b8798' }}>AquaLife</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 3, mt: 3 }}>Nơi nuôi dưỡng đam mê thủy sinh — chất lượng, tận tâm, bền vững.</Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 5, maxWidth: 600, margin: '0 auto' }}>
               Hơn 1 thập kỉ, chúng tôi đã nỗ lực, đồng hành với những người đam mê thủy sinh và cùng nhau phát triển cộng đồng.
               AquaLife không chỉ cung cấp chất lượng sản phẩm tốt nhất, lời khuyên của những chuyên gia hàng đầu trong lĩnh vực thủy sinh mà còn là những dịch vụ, ưu đãi ngoài mong đợi cho khách hàng.

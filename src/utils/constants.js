@@ -1,3 +1,21 @@
-// Prefer Vite env var VITE_API_BASE, otherwise fall back to localhost:1704
-export const API_ROOT = import.meta.env.VITE_API_BASE || 'http://localhost:1704'
+let apiRoot = ''
+if (process.env.BUILD_MODE === 'dev') {
+  apiRoot = 'http://localhost:5173'
+} else {
+  apiRoot = 'https://aqualife-api.onrender.com'
+}
+export const API_ROOT = apiRoot
 
+export const REGISTER_FIELD = {
+  fullName: '',
+  email: '',
+  phone: '',
+  address: '',
+  password: '',
+  confirmPassword: ''
+}
+
+export const LOGIN_FIELD = {
+  email: '',
+  password: ''
+}

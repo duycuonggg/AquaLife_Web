@@ -38,10 +38,10 @@ export default function Footer() {
 
         <Box sx={{ lineHeight: 1.8 }}>
           <Typography fontWeight={700} sx={{ mb: 1 }}>Hỗ trợ</Typography>
-          <Box>Hướng dẫn</Box>
-          <Box>Hỏi đáp</Box>
-          <Box>Liên hệ</Box>
-          <Box>Thông tin vận chuyển</Box>
+          <Box><RouterLink to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>Hướng dẫn</RouterLink></Box>
+          <Box><RouterLink to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>Hỏi đáp</RouterLink></Box>
+          <Box><RouterLink to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>Liên hệ</RouterLink></Box>
+          <Box><RouterLink to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>Thông tin vận chuyển</RouterLink></Box>
         </Box>
 
         <Box sx={{ lineHeight: 1.8 }}>

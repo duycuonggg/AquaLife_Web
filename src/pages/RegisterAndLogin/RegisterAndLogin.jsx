@@ -4,15 +4,46 @@ import { Box, Button, Card, CardContent, TextField, Typography, InputAdornment, 
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { registerAPI, loginAPI } from '~/apis/index'
 import { getUserFromToken } from '~/utils/auth'
+import { validateRegister, validateLogin } from '~/utils/validattion'
 import logo from '~/assets/logo.png'
 
+// Cấu hình styling cho TextField
+const INPUT_STYLE = {
+  '& .MuiOutlinedInput-root': { borderRadius: 2, backgroundColor: '#fff' },
+  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
+  '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7' },
+  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7', borderWidth: '1px' },
+  '& input': { padding: '12px 14px' }
+}
+
+// Cấu hình styling cho Button
+const BUTTON_STYLE = {
+  py: 1.5,
+  backgroundColor: '#008C9E',
+  '&:hover': { backgroundColor: '#00798a' },
+  fontSize: '1rem',
+  fontWeight: 600
+}
+
+// Role constant
+const ROLE_CUSTOMER = 'customer'
+
+// Danh sách fields cho form đăng ký
+const REGISTER_FORM_FIELDS = [
+  { id: 'fullName', name: 'fullName', label: 'Họ tên', placeholder: 'Họ tên của bạn', type: 'text', required: true },
+  { id: 'email', name: 'email', label: 'Địa chỉ email', placeholder: 'emailcuaban@gmail.com', type: 'email', required: true },
+  { id: 'phone', name: 'phone', label: 'Số điện thoại', placeholder: 'Số điện thoại của bạn', type: 'tel', required: true },
+  { id: 'address', name: 'address', label: 'Địa chỉ', placeholder: 'Địa chỉ của bạn', type: 'text', required: true },
+  { id: 'password', name: 'password', label: 'Mật khẩu', placeholder: '••••••••', type: 'password', required: true, toggle: true },
+  { id: 'confirmPassword', name: 'confirmPassword', label: 'Xác nhận mật khẩu', placeholder: '••••••••', type: 'password', required: true, toggle: true }
+]
+
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(false) // false = Register, true = Login
+  // === STATE MANAGEMENT ===
+  const navigate = useNavigate()
+  const [isLogin, setIsLogin] = useState(false) // false = Đăng ký, true = Đăng nhập
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-  const navigate = useNavigate()
-
-  // Register form data
   const [registerData, setRegisterData] = useState({
     fullName: '',
     email: '',
@@ -21,90 +52,97 @@ export default function Auth() {
     password: '',
     confirmPassword: ''
   })
+  const [loginData, setLoginData] = useState({ email: '', password: '' })
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({})
 
-  // Login form data
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
-  })
-
-  const [showPassword, setShowPassword] = useState(false)
-
-  // Toggle between login and register
   const toggleMode = () => {
-    setIsLogin(!isLogin)
+    setIsLogin(prev => !prev)
     setErrorMsg('')
-    setShowPassword(false)
+    setFieldErrors({})
+    setShowRegisterPassword(false)
+    setShowConfirmPassword(false)
+    setShowLoginPassword(false)
   }
 
-  // Handle register form change
+  /**
+   * Xử lý thay đổi giá trị input trong form đăng ký
+   */
   const handleRegisterChange = (e) => {
     const { name, value } = e.target
-    setRegisterData({ ...registerData, [name]: value })
+    setRegisterData(prev => ({ ...prev, [name]: value }))
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }))
     if (errorMsg) setErrorMsg('')
   }
 
-  // Handle login form change
+  /**
+   * Xử lý thay đổi giá trị input trong form đăng nhập
+   */
   const handleLoginChange = (e) => {
     const { name, value } = e.target
-    setLoginData({ ...loginData, [name]: value })
+    setLoginData(prev => ({ ...prev, [name]: value }))
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }))
     if (errorMsg) setErrorMsg('')
   }
 
-  // Handle register submit
+  /**
+   * Xử lý submit form đăng ký
+   * - Validate input
+   * - Gọi API đăng ký
+   * - Chuyển sang form đăng nhập sau khi thành công
+   */
   const handleRegisterSubmit = async (e) => {
     e.preventDefault()
     setErrorMsg('')
+    setFieldErrors({})
+
+    const errors = validateRegister(registerData)
+    if (Object.keys(errors).length) {
+      setFieldErrors(errors)
+      return
+    }
 
     const fullName = registerData.fullName.trim()
     const email = registerData.email.trim()
     const phone = registerData.phone.trim()
     const address = registerData.address.trim()
     const password = registerData.password
-    const confirmPassword = registerData.confirmPassword
-
-    if (password !== confirmPassword) {
-      setErrorMsg('Mật khẩu xác nhận không khớp.')
-      return
-    }
-    if (password.length < 10) {
-      setErrorMsg('Mật khẩu phải có ít nhất 10 ký tự.')
-      return
-    }
-    if (address.length < 10) {
-      setErrorMsg('Địa chỉ phải có ít nhất 10 ký tự.')
-      return
-    }
-    const phonePattern = /^(0(3[2-9]|5[2689]|7[06-9]|8[1-689]|9[0-46-9]))\d{7}$/
-    if (phone && !phonePattern.test(phone)) {
-      setErrorMsg('Số điện thoại không hợp lệ.')
-      return
-    }
 
     try {
       setLoading(true)
       const payload = { name: fullName, email, phone, address, password }
       await registerAPI(payload)
-      // Switch to login mode after successful registration
+
       setIsLogin(true)
       setErrorMsg('')
-      // Optionally pre-fill login email
-      setLoginData({ ...loginData, email })
+      setLoginData(prev => ({ ...prev, email }))
     } catch (error) {
-      setErrorMsg(error.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.')
+      const backendMsg = error.response?.data?.message_vi || error.response?.data?.message
+      setErrorMsg(backendMsg || 'Đăng ký thất bại. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
   }
 
-  // Handle login submit
+  /**
+   * Xử lý submit form đăng nhập
+   * - Validate input
+   * - Gọi API đăng nhập
+   * - Lưu token & thông tin user vào localStorage
+   * - Redirect theo role (admin hoặc customer)
+   */
   const handleLoginSubmit = async (e) => {
     e.preventDefault()
     setErrorMsg('')
+    setFieldErrors({})
 
     const { email, password } = loginData
-    if (!email || !password) {
-      setErrorMsg('Vui lòng nhập đầy đủ email và mật khẩu')
+
+    const errors = validateLogin(loginData)
+    if (Object.keys(errors).length) {
+      setFieldErrors(errors)
       return
     }
 
@@ -116,26 +154,18 @@ export default function Auth() {
         localStorage.setItem('auth_token', res.token)
       }
 
-      try {
-        const user = res?.customer
-        if (user?.image) localStorage.setItem('auth_user_image', user.image)
-        if (user?.name) localStorage.setItem('auth_user_name', user.name)
-      } catch (e) {
-        // ignore storage errors
-      }
+      const user = res?.customer || {}
+      if (user.imageUrl || user.image) localStorage.setItem('auth_user_image', user.imageUrl || user.image)
+      if (user.name) localStorage.setItem('auth_user_name', user.name)
 
       const tokenPayload = getUserFromToken()
       const roleFromToken = tokenPayload?.role
-      const user = res?.customer
-      const effectiveRole = roleFromToken || user?.role
+      const effectiveRole = roleFromToken || user.role
 
-      if (effectiveRole && effectiveRole !== 'customer') {
-        navigate('/admin', { replace: true })
-      } else {
-        navigate('/', { replace: true })
-      }
+      navigate(effectiveRole !== ROLE_CUSTOMER ? '/admin' : '/', { replace: true })
     } catch (err) {
-      setErrorMsg('Đăng nhập thất bại, vui lòng thử lại.')
+      const backendMsg = err.response?.data?.message_vi || err.response?.data?.message
+      setErrorMsg(backendMsg || 'Đăng nhập thất bại. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -153,10 +183,9 @@ export default function Auth() {
       py: 5,
       overflow: 'hidden'
     }}>
-      {/* Logo and Title */}
       <Box sx={{ textAlign: 'center', mb: 3, zIndex: 10 }}>
+        <Box component="img" src={logo} alt="AquaLife Logo" sx={{ width: 70, height: 70 }} />
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
-          <Box component="img" src={logo} alt="AquaLife Logo" sx={{ width: 70, height: 70 }} />
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#0693a6', ml: 1 }}>AquaLife</Typography>
         </Box>
         <Typography variant="h6" sx={{ mb: 0.5, fontWeight: 700 }}>
@@ -167,14 +196,12 @@ export default function Auth() {
         </Typography>
       </Box>
 
-      {/* Container with perspective for 3D effect */}
       <Box sx={{
         perspective: '1000px',
         width: '100%',
         maxWidth: isLogin ? 420 : 760,
         transition: 'max-width 0.6s ease-in-out'
       }}>
-        {/* Card with flip animation */}
         <Card sx={{
           borderRadius: 2,
           boxShadow: '0 18px 30px rgba(20,60,80,0.06)',
@@ -184,7 +211,6 @@ export default function Auth() {
           transform: isLogin ? 'rotateY(180deg)' : 'rotateY(0deg)',
           position: 'relative'
         }}>
-          {/* Register Form - Front Side */}
           <Box sx={{
             backfaceVisibility: 'hidden',
             transform: 'rotateY(0deg)',
@@ -195,57 +221,63 @@ export default function Auth() {
             pointerEvents: isLogin ? 'none' : 'auto'
           }}>
             <CardContent sx={{ p: { xs: 3, md: 5 } }}>
-              <form onSubmit={handleRegisterSubmit}>
+              <form onSubmit={handleRegisterSubmit} noValidate>
                 <Box sx={{
                   display: 'grid',
                   gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(260px, 1fr))' },
                   gap: '12px 16px'
                 }}>
-                  {[
-                    { id: 'fullName', name: 'fullName', label: 'Họ tên', placeholder: 'Duy Cường', type: 'text', required: true },
-                    { id: 'email', name: 'email', label: 'Địa chỉ email', placeholder: 'duycuong@example.com', type: 'email', required: true },
-                    { id: 'phone', name: 'phone', label: 'Số điện thoại', placeholder: '0958258613', type: 'tel', required: true },
-                    { id: 'address', name: 'address', label: 'Địa chỉ', placeholder: '123 Hoàng Mai, Hà Nội', type: 'text', required: true },
-                    { id: 'password', name: 'password', label: 'Mật khẩu', placeholder: '••••••••', type: showPassword ? 'text' : 'password', required: true, toggle: true },
-                    { id: 'confirmPassword', name: 'confirmPassword', label: 'Xác nhận mật khẩu', placeholder: '••••••••', type: 'password', required: true }
-                  ].map((f) => (
-                    <Box key={f.name} sx={{ mb: 2 }}>
-                      <Box component="label" htmlFor={f.id} sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>
-                        {f.label}
+                  {REGISTER_FORM_FIELDS.map((f) => {
+                    const isPasswordField = f.name === 'password'
+                    const isConfirmField = f.name === 'confirmPassword'
+                    const isToggleField = !!f.toggle
+                    const inputType = isToggleField
+                      ? (isPasswordField
+                        ? (showRegisterPassword ? 'text' : 'password')
+                        : isConfirmField
+                          ? (showConfirmPassword ? 'text' : 'password')
+                          : f.type)
+                      : f.type
+
+                    return (
+                      <Box key={f.name} sx={{ mb: 2 }}>
+                        <Box component="label" htmlFor={f.id} sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>
+                          {f.label}
+                        </Box>
+                        <TextField
+                          id={f.id}
+                          name={f.name}
+                          type={inputType}
+                          placeholder={f.placeholder}
+                          variant="outlined"
+                          fullWidth
+                          required={f.required}
+                          value={registerData[f.name]}
+                          onChange={handleRegisterChange}
+                          sx={INPUT_STYLE}
+                          error={Boolean(fieldErrors[f.name])}
+                          helperText={fieldErrors[f.name] || ''}
+                          FormHelperTextProps={{ sx: { mt: 0.5, ml: 0, color: '#d32f2f', fontSize: '0.85rem' } }}
+                          InputProps={isToggleField ? {
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  aria-label="toggle password visibility"
+                                  onClick={() => {
+                                    if (isPasswordField) setShowRegisterPassword(prev => !prev)
+                                    else if (isConfirmField) setShowConfirmPassword(prev => !prev)
+                                  }}
+                                  edge="end"
+                                >
+                                  {(isPasswordField ? showRegisterPassword : showConfirmPassword) ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                              </InputAdornment>
+                            )
+                          } : undefined}
+                        />
                       </Box>
-                      <TextField
-                        id={f.id}
-                        name={f.name}
-                        type={f.type}
-                        placeholder={f.placeholder}
-                        variant="outlined"
-                        fullWidth
-                        required={f.required}
-                        value={registerData[f.name]}
-                        onChange={handleRegisterChange}
-                        sx={{
-                          '& .MuiOutlinedInput-root': { borderRadius: 2, backgroundColor: '#fff' },
-                          '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E5E7EB' },
-                          '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7' },
-                          '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0097A7', borderWidth: '1px' },
-                          '& input': { padding: '12px 14px' }
-                        }}
-                        InputProps={f.toggle ? {
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={() => setShowPassword(!showPassword)}
-                                edge="end"
-                              >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          )
-                        } : undefined}
-                      />
-                    </Box>
-                  ))}
+                    )
+                  })}
                 </Box>
 
                 {errorMsg && <Typography color="error" sx={{ mb: 2, textAlign: 'center' }}>{errorMsg}</Typography>}
@@ -255,14 +287,7 @@ export default function Auth() {
                   variant="contained"
                   fullWidth
                   disabled={loading}
-                  sx={{
-                    mt: 2,
-                    py: 1.5,
-                    backgroundColor: '#008C9E',
-                    '&:hover': { backgroundColor: '#00798a' },
-                    fontSize: '1rem',
-                    fontWeight: 600
-                  }}
+                  sx={{ mt: 2, ...BUTTON_STYLE }}
                 >
                   {loading ? 'Đang đăng ký...' : 'Đăng ký'}
                 </Button>
@@ -285,7 +310,6 @@ export default function Auth() {
             </CardContent>
           </Box>
 
-          {/* Login Form - Back Side */}
           <Box sx={{
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
@@ -298,7 +322,7 @@ export default function Auth() {
             pointerEvents: isLogin ? 'auto' : 'none'
           }}>
             <CardContent sx={{ p: { xs: 3, md: 5 } }}>
-              <form onSubmit={handleLoginSubmit}>
+              <form onSubmit={handleLoginSubmit} noValidate>
                 <Box sx={{ mb: 2 }}>
                   <Box component="label" htmlFor="login-email" sx={{ display: 'block', mb: 1, fontWeight: 600, color: '#374151' }}>
                     Địa chỉ email
@@ -306,17 +330,17 @@ export default function Auth() {
                   <TextField
                     id="login-email"
                     name="email"
-                    placeholder="duycuong@example.com"
+                    placeholder="emailcuaban@gmail.com"
                     type="email"
                     variant="outlined"
                     fullWidth
                     required
                     value={loginData.email}
                     onChange={handleLoginChange}
-                    sx={{
-                      '& .MuiOutlinedInput-root': { borderRadius: 2, backgroundColor: '#fff' },
-                      '& input': { padding: '12px 14px' }
-                    }}
+                    sx={INPUT_STYLE}
+                    error={Boolean(fieldErrors.email)}
+                    helperText={fieldErrors.email || ''}
+                    FormHelperTextProps={{ sx: { mt: 0.5, ml: 0, color: '#d32f2f', fontSize: '0.85rem' } }}
                   />
                 </Box>
 
@@ -328,25 +352,25 @@ export default function Auth() {
                     id="login-password"
                     name="password"
                     placeholder="••••••••"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showLoginPassword ? 'text' : 'password'}
                     variant="outlined"
                     fullWidth
                     required
                     value={loginData.password}
                     onChange={handleLoginChange}
-                    sx={{
-                      '& .MuiOutlinedInput-root': { borderRadius: 2, backgroundColor: '#fff' },
-                      '& input': { padding: '12px 14px' }
-                    }}
+                    sx={INPUT_STYLE}
+                    error={Boolean(fieldErrors.password)}
+                    helperText={fieldErrors.password || ''}
+                    FormHelperTextProps={{ sx: { mt: 0.5, ml: 0, color: '#d32f2f', fontSize: '0.85rem' } }}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton
                             aria-label="toggle password visibility"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={() => setShowLoginPassword(!showLoginPassword)}
                             edge="end"
                           >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                            {showLoginPassword ? <VisibilityOff /> : <Visibility />}
                           </IconButton>
                         </InputAdornment>
                       )
@@ -361,14 +385,7 @@ export default function Auth() {
                   variant="contained"
                   fullWidth
                   disabled={loading}
-                  sx={{
-                    mt: 2,
-                    py: 1.5,
-                    backgroundColor: '#008C9E',
-                    '&:hover': { backgroundColor: '#00798a' },
-                    fontSize: '1rem',
-                    fontWeight: 600
-                  }}
+                  sx={{ mt: 2, ...BUTTON_STYLE }}
                 >
                   {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                 </Button>
@@ -382,7 +399,7 @@ export default function Auth() {
                     type="button"
                     onClick={toggleMode}
                     underline="hover"
-                    sx={{ color: '#0b8798', fontWeight: 600, cursor: 'pointer' }}
+                    sx={{ color: '#0b8798', fontWeight: 600, cursor: 'pointer', mb: 0.5, ml: 0.5 }}
                   >
                     Đăng ký
                   </Link>

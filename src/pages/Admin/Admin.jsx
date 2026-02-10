@@ -55,21 +55,32 @@ export default function Admin() {
               } catch (e) {
                 /* ignore */
               }
-              navigate('/login', { replace: true })
+              navigate('/RegisterAndLogin', { replace: true })
             }}
           >
             Đăng xuất
           </Button>
         </Toolbar>
       </AppBar>
-      <Box component="main" sx={{ flex: 1, p: 3, mt: '64px', background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+      <Box sx={{ display: 'flex', flex: 1, mt: '64px', minHeight: 'calc(100vh - 64px)' }}>
+        <Box
+          sx={{
+            width: 240,
+            borderRight: 1,
+            borderColor: 'divider',
+            background: '#ffffff',
+            position: 'sticky',
+            top: 64,
+            height: 'calc(100vh - 64px)'
+          }}
+        >
           <Tabs
+            orientation="vertical"
             value={tabIndex}
             onChange={(e, v) => {
               setTabIndex(v)
-              const mapping = ['dashboard', 'products', 'orders', 'employees', 'customers']
-              const paths = ['/admin', '/admin/products', '/admin/orders', '/admin/employees', '/admin/customers']
+              const mapping = ['dashboard', 'products', 'orders', 'customers']
+              const paths = ['/admin', '/admin/products', '/admin/orders', '/admin/customers']
               const next = mapping[v] || 'dashboard'
               setSection(next)
               try {
@@ -79,39 +90,42 @@ export default function Admin() {
               }
             }}
             aria-label="Admin sections"
+            sx={{ pt: 3 }}
           >
-            <Tab icon={<DashboardIcon />} label="Tổng quan" />
-            <Tab icon={<InventoryIcon />} label="Sản phẩm" />
-            <Tab icon={<ReceiptLongIcon />} label="Đơn hàng" />
-            <Tab icon={<PersonIcon />} label="Khách hàng" />
+            <Tab icon={<DashboardIcon />} iconPosition="start" label="Tổng quan" sx={{ alignItems: 'center', fontSize: 16 }} />
+            <Tab icon={<InventoryIcon />} iconPosition="start" label="Sản phẩm" sx={{ alignItems: 'center', fontSize: 16 }} />
+            <Tab icon={<ReceiptLongIcon />} iconPosition="start" label="Đơn hàng" sx={{ alignItems: 'center', fontSize: 16 }} />
+            <Tab icon={<PersonIcon />} iconPosition="start" label="Khách hàng" sx={{ alignItems: 'center', fontSize: 16 }} />
           </Tabs>
         </Box>
 
-        {section === 'dashboard' && (
-          <Box>
-            <Dashboard />
-          </Box>
-        )}
-
-        {section === 'products' && (
-          <Box>
-            <Products />
-          </Box>
-        )}
-
-        {section === 'orders' && (
-          <Box>
-            <AdminOrders />
-          </Box>
-        )}
-
-        {section === 'customers' && (
-          <Box>
+        <Box component="main" sx={{ flex: 1, p: 3, background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
+          {section === 'dashboard' && (
             <Box>
-              <Customers />
+              <Dashboard />
             </Box>
-          </Box>
-        )}
+          )}
+
+          {section === 'products' && (
+            <Box>
+              <Products />
+            </Box>
+          )}
+
+          {section === 'orders' && (
+            <Box>
+              <AdminOrders />
+            </Box>
+          )}
+
+          {section === 'customers' && (
+            <Box>
+              <Box>
+                <Customers />
+              </Box>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Box>
   )

@@ -5,11 +5,12 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import ProductForm from '~/pages/Admin/Products/ProductForm/ProductForm.jsx'
 import Pagination from '@mui/material/Pagination'
 import Stack from '@mui/material/Stack'
-import { getProductsAPI, deleteProductAPI, deleteAllProductsAPI } from '~/apis/index'
+import { getProductsAPI, deleteProductAPI, deleteAllProductsAPI, getCategoriesAPI } from '~/apis/index'
 import { toast } from 'react-toastify'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([])
+  const [categoryMap, setCategoryMap] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const [loading, setLoading] = useState(false)
@@ -33,6 +34,26 @@ export default function ProductsPage() {
 
   useEffect(() => {
     fetch()
+  }, [])
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategoriesAPI()
+        const map = (Array.isArray(data) ? data : []).reduce((acc, cat) => {
+          const id = cat?._id || cat?.id
+          if (!id) return acc
+          acc[String(id)] = cat?.name || cat?.category_name || 'Danh mục'
+          return acc
+        }, {})
+        setCategoryMap(map)
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch categories', err)
+      }
+    }
+
+    loadCategories()
   }, [])
 
   useEffect(() => {
@@ -61,7 +82,8 @@ export default function ProductsPage() {
       console.warn('Cannot delete product: missing id', product)
       return
     }
-    const ok = window.confirm(`Xác nhận xóa sản phẩm "${product.product_name}"?`)
+    const displayName = product?.name || product?.product_name || 'Sản phẩm'
+    const ok = window.confirm(`Xác nhận xóa sản phẩm "${displayName}"?`)
     if (!ok) return
     try {
       await deleteProductAPI(product._id || product.id)
@@ -125,7 +147,7 @@ export default function ProductsPage() {
                 const filtered = (products || []).filter((p) => {
                   if (!searchTerm) return true
                   const q = searchTerm.toLowerCase()
-                  return (p.product_name || '').toLowerCase().includes(q) || (p.product_type || '').toLowerCase().includes(q)
+                  return (p.name || p.product_name || '').toLowerCase().includes(q)
                 })
                 const total = filtered.length
                 const totalPages = Math.max(1, Math.ceil(total / pageSize))
@@ -134,19 +156,36 @@ export default function ProductsPage() {
                 const pageItems = filtered.slice(start, start + pageSize)
                 return pageItems.map((p) => (
                   <TableRow key={p._id || p.id}>
-                    <TableCell align="center">{p.product_name}</TableCell>
+                    <TableCell align="center">{p.name || p.product_name}</TableCell>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center' }}>
-                        {p.image_url ? (
-                          <Box sx={{ width: 64, height: 48, backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: `url(${p.image_url})`, borderRadius: 1 }} />
+                        {(p.imageUrl || p.image_url) ? (
+                          <Box
+                            sx={{
+                              width: 64,
+                              height: 48,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundImage: `url(${p.imageUrl || p.image_url})`,
+                              borderRadius: 1
+                            }}
+                          />
                         ) : (
                           <Box sx={{ width: 64, height: 48, background: '#f0f0f0', borderRadius: 1 }} />
                         )}
                       </Box>
                     </TableCell>
-                    <TableCell align="center">{p.product_type}</TableCell>
-                    <TableCell align="center" sx={{ color: '#d32f2f', fontWeight: '700' }}>{p.price} đ</TableCell>
-                    <TableCell align="center">{p.stock_quantity}</TableCell>
+                    <TableCell align="center">
+                      {(() => {
+                        const rawId = p.categoryId || p.category_id
+                        const resolvedId = rawId?._id || rawId?.id || rawId
+                        return categoryMap[String(resolvedId)] || '-'
+                      })()}
+                    </TableCell>
+                    <TableCell align="center" sx={{ color: '#d32f2f', fontWeight: '700' }}>
+                      {(Number(p.price) || 0).toLocaleString('vi-VN')} đ
+                    </TableCell>
+                    <TableCell align="center">{p.quantity ?? p.stock_quantity ?? 0}</TableCell>
                     <TableCell align="center">
                       <Button size="small" onClick={() => handleEdit(p)}>Sửa</Button>
                       <Button size="small" color="error" onClick={() => handleDelete(p)}>Xóa</Button>
@@ -162,7 +201,7 @@ export default function ProductsPage() {
             <Pagination count={Math.max(1, Math.ceil(((products || []).filter((p) => {
               if (!searchTerm) return true
               const q = searchTerm.toLowerCase()
-              return (p.product_name || '').toLowerCase().includes(q) || (p.product_type || '').toLowerCase().includes(q)
+              return (p.name || p.product_name || '').toLowerCase().includes(q)
             })).length / pageSize))} page={currentPage} onChange={(e, v) => setCurrentPage(v)} color="primary" />
           </Stack>
         </Box>

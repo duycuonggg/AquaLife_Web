@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Pagination, IconButton, TextField } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import AdminOrderDetail from './AdminOrderDetail/AdminOrderDetail'
 // AdminOrders.css was empty — styles handled via MUI `sx` props
-import { getOrdersAPI, updateOrderAPI } from '~/apis/index'
+import { getOrdersAPI, updateOrderAPI, getCustomersAPI } from '~/apis/index'
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([])
@@ -14,18 +14,36 @@ export default function AdminOrders() {
 
   const load = async () => {
     try {
-      const items = await getOrdersAPI()
-      const normalized = Array.isArray(items) ? items.map((o) => ({
-        ...o,
-        __id: idToStr(o._id || o.id),
-        __customersId: idToStr(o.customersId)
-      })) : []
+      const [items, users] = await Promise.all([getOrdersAPI(), getCustomersAPI()])
+      const userMap = (Array.isArray(users) ? users : []).reduce((acc, u) => {
+        const id = idToStr(u?._id || u?.id)
+        if (!id) return acc
+        acc[id] = u
+        return acc
+      }, {})
+
+      const normalized = Array.isArray(items) ? items.map((o) => {
+        const rawUserId = o.userId || o.customerId || o.customersId
+        const userId = idToStr(rawUserId?._id || rawUserId)
+        const user = userMap[userId]
+        const displayName = user?.name || user?.email || user?.phone || userId
+        return {
+          ...o,
+          __id: idToStr(o._id || o.id),
+          __userId: userId,
+          __userDisplay: displayName
+        }
+      }) : []
       setOrders(normalized)
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Failed to load orders', err)
     }
   }
+
+  useEffect(() => {
+    load()
+  }, [])
 
   const [selectedOrderId, setSelectedOrderId] = useState(null)
   const openDetail = (id) => setSelectedOrderId(id)
@@ -46,7 +64,7 @@ export default function AdminOrders() {
   const filtered = (orders || []).filter((o) => {
     if (!searchTerm) return true
     const q = searchTerm.toLowerCase()
-    return (o._id || o.id || '').toString().toLowerCase().includes(q) || (o.name || o.customerName || '').toLowerCase().includes(q)
+    return (o._id || o.id || '').toString().toLowerCase().includes(q) || (o.__userDisplay || '').toLowerCase().includes(q)
   })
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const shown = filtered.slice((page - 1) * pageSize, page * pageSize)
@@ -67,8 +85,8 @@ export default function AdminOrders() {
           <TableHead sx={{ backgroundColor: '#0b8798' }}>
             <TableRow>
               <TableCell align="center">Mã đơn</TableCell>
-              <TableCell align="center">Khách hàng</TableCell>
-              <TableCell align="center">Thời gian</TableCell>
+                <TableCell align="center">Khách hàng</TableCell>
+                <TableCell align="center">Thời gian</TableCell>
               <TableCell align="center">Trạng thái</TableCell>
               <TableCell align="center">Tổng</TableCell>
               <TableCell align="center">Hành động</TableCell>
@@ -78,13 +96,19 @@ export default function AdminOrders() {
             {shown.map((o) => (
               <TableRow key={o._id || o.id}>
                 <TableCell align="center">{o._id || o.id}</TableCell>
-                <TableCell align="center">{new Date(o.orderDate).toLocaleString()}</TableCell>
+                <TableCell align="center">{o.__userDisplay || '-'}</TableCell>
+                <TableCell align="center">
+                  {(() => {
+                    const timeValue = o.createdAt || o.orderDate
+                    return timeValue ? new Date(timeValue).toLocaleString() : '-'
+                  })()}
+                </TableCell>
                 <TableCell align="center">{o.status}</TableCell>
                 <TableCell align="center" sx={{ fontWeight: 700, color: '#d32f2f' }}>{(Number(o.totalPrice) || 0).toLocaleString('vi-VN')} đ</TableCell>
                 <TableCell align="center">
                   <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                     <Button size="small" variant="outlined" onClick={() => openDetail(o._id || o.id)}>Chi tiết</Button>
-                    {o.status === 'Đang chờ' ? (
+                    {o.status === 'Đang đợi' ? (
                       approvingId === (o._id || o.id) ? (
                         <Button size="small" variant="contained" disabled>
                           ...

@@ -6,7 +6,7 @@
   "author": "duycuonggg",
   "description": "",
   "engines": {
-    "node": ">=18.x"
+    "node": ">=24.x"
   },
   "scripts": {
     "dev": "cross-env BUILD_MODE=dev vite --host",

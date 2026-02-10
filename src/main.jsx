@@ -1,4 +1,3 @@
-// import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -11,6 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <CssVarsProvider theme={theme}>
     <CssBaseline />
     <App />
+    {/* Toast thông báo hiển thị toàn cục */}
     <ToastContainer position='top-center' theme='colored' />
   </CssVarsProvider>
 )

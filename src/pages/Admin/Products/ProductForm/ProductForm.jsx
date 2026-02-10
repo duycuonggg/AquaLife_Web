@@ -5,13 +5,12 @@ import { createProductAPI, updateProductAPI, getCategoriesAPI } from '~/apis/ind
 
 export default function ProductForm({ onSuccess, initialData, onCancel }) {
   const [productName, setProductName] = useState('')
-  const [productType, setProductType] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [stockQuantity, setStockQuantity] = useState('')
   const [imageUrl, setImageUrl] = useState('')
-  const [status, setStatus] = useState('available')
+  const [status, setStatus] = useState('Còn hàng')
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -30,46 +29,50 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
 
   useEffect(() => {
     if (initialData) {
-      setProductName(initialData.product_name || '')
-      setProductType(initialData.product_type || '')
-      setCategoryId(initialData.category_id || '')
+      const statusMap = {
+        available: 'Còn hàng',
+        out_of_stock: 'Hết hàng'
+      }
+      const rawStatus = initialData.status
+      const normalizedStatus = statusMap[rawStatus] || rawStatus || 'Còn hàng'
+
+      setProductName(initialData.name || initialData.product_name || '')
+      setCategoryId(initialData.categoryId || initialData.category_id || '')
       setDescription(initialData.description || '')
       setPrice(initialData.price != null ? String(initialData.price) : '')
-      setStockQuantity(initialData.stock_quantity != null ? String(initialData.stock_quantity) : '')
-      setImageUrl(initialData.image_url || '')
-      setStatus(initialData.status || 'available')
+      setStockQuantity(initialData.quantity != null ? String(initialData.quantity) : (initialData.stock_quantity != null ? String(initialData.stock_quantity) : ''))
+      setImageUrl(initialData.imageUrl || initialData.image_url || '')
+      setStatus(normalizedStatus)
       setError('')
     }
   }, [initialData])
 
   const reset = () => {
     setProductName('')
-    setProductType('')
     setCategoryId('')
     setDescription('')
     setPrice('')
     setStockQuantity('')
     setImageUrl('')
-    setStatus('available')
+    setStatus('Còn hàng')
     setError('')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (!productName || !price || !productType || !imageUrl) {
-      setError('Vui lòng điền đầy đủ: tên, loại, giá và ảnh')
+    if (!productName || !price || !imageUrl) {
+      setError('Vui lòng điền đầy đủ: tên, giá và ảnh')
       return
     }
 
     const payload = {
-      product_name: productName,
-      product_type: productType,
-      category_id: categoryId || undefined,
+      name: productName,
+      categoryId: categoryId || undefined,
       price: Number(price),
-      stock_quantity: stockQuantity ? Number(stockQuantity) : 0,
+      quantity: stockQuantity ? Number(stockQuantity) : 0,
       description,
-      image_url: imageUrl,
+      imageUrl: imageUrl,
       status
     }
 
@@ -96,26 +99,17 @@ export default function ProductForm({ onSuccess, initialData, onCancel }) {
       <CardContent>
         <Box component="form" onSubmit={handleSubmit} display="grid" gap={2} sx={{ gridTemplateColumns: '1fr 1fr' }}>
           <TextField label="Tên sản phẩm" value={productName} onChange={(e) => setProductName(e.target.value)} required sx={{ gridColumn: '1 / 2' }} />
-          <TextField select label="Loại sản phẩm" value={productType} onChange={(e) => setProductType(e.target.value)} required sx={{ gridColumn: '2 / 3' }}>
-            <MenuItem value="">Chọn loại</MenuItem>
-            <MenuItem value="fish">Cá</MenuItem>
-            <MenuItem value="aquarium">Bể cá</MenuItem>
-            <MenuItem value="accessory">Phụ kiện</MenuItem>
-            <MenuItem value="food">Thức ăn</MenuItem>
-            <MenuItem value="plant">Cây thủy sinh</MenuItem>
-          </TextField>
 
           <TextField select label="Danh mục" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} sx={{ gridColumn: '1 / 2' }}>
             <MenuItem value="">Không chọn</MenuItem>
             {categories.map((cat) => (
-              <MenuItem key={cat._id || cat.id} value={cat._id || cat.id}>{cat.category_name}</MenuItem>
+              <MenuItem key={cat._id || cat.id} value={cat._id || cat.id}>{cat.name || cat.category_name}</MenuItem>
             ))}
           </TextField>
 
           <TextField select label="Tình trạng" value={status} onChange={(e) => setStatus(e.target.value)} sx={{ gridColumn: '2 / 3' }}>
-            <MenuItem value="available">Còn hàng</MenuItem>
-            <MenuItem value="out_of_stock">Hết hàng</MenuItem>
-            <MenuItem value="discontinued">Ngừng kinh doanh</MenuItem>
+            <MenuItem value="Còn hàng">Còn hàng</MenuItem>
+            <MenuItem value="Hết hàng">Hết hàng</MenuItem>
           </TextField>
 
           <TextField label="Mô tả" value={description} onChange={(e) => setDescription(e.target.value)} multiline rows={3} sx={{ gridColumn: '1 / -1' }} />

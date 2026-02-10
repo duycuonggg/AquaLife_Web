@@ -11,21 +11,21 @@ export default function Profile() {
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(false)
   const [customer, setCustomer] = useState(null)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', image: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', imageUrl: '' })
 
   useEffect(() => {
     const payload = getUserFromToken()
     if (!payload || payload.role !== 'customer') {
-      navigate('/login')
+      navigate('/RegisterAndLogin')
       return
     }
     const uid = payload.id || payload._id || payload.userId || ''
     if (!uid) {
-      navigate('/login')
+      navigate('/RegisterAndLogin')
       return
     }
 
-    // try to populate from localStorage immediately so UI shows while we fetch
+    // Ưu tiên lấy dữ liệu từ localStorage để hiển thị nhanh trước khi gọi API
     try {
       const storedImage = localStorage.getItem('auth_user_image')
       const storedName = localStorage.getItem('auth_user_name')
@@ -39,7 +39,7 @@ export default function Profile() {
         email: prev.email || storedEmail || '',
         phone: prev.phone || storedPhone || '',
         address: prev.address || storedAddress || '',
-        image: prev.image || storedImage || ''
+        imageUrl: prev.imageUrl || storedImage || ''
       }))
     } catch (err) {
       // ignore storage errors
@@ -49,20 +49,20 @@ export default function Profile() {
     const load = async () => {
       setLoading(true)
       try {
-        // try to prefer stored values from localStorage first
+        // Ưu tiên giá trị đã lưu khi gọi API để tránh nháy UI
         const storedImage = localStorage.getItem('auth_user_image')
         const storedName = localStorage.getItem('auth_user_name')
 
         const me = await getCustomerAPI(uid)
         if (!mounted) return
         const data = me || {}
-        // ensure fields exist
+        // Đảm bảo các trường luôn có giá trị mặc định
         const initial = {
           name: data.name || storedName || '',
           email: data.email || '',
           phone: data.phone || data.mobile || '',
           address: data.address || '',
-          image: data.image || storedImage || ''
+          imageUrl: data.imageUrl || data.image || storedImage || ''
         }
         setCustomer(data)
         setForm(initial)
@@ -85,10 +85,10 @@ export default function Profile() {
       setLoading(true)
       const id = customer._id || customer.id
       const payload = { name: form.name, phone: form.phone, address: form.address }
-      if (form.image) payload.image = form.image
+      if (form.imageUrl) payload.imageUrl = form.imageUrl
       if (form.email) payload.email = form.email
 
-      // update API returns an update result, so re-fetch the customer to get current data
+      // API trả về kết quả cập nhật, nên gọi lại để lấy dữ liệu mới nhất
       await updateCustomerAPI(id, payload)
       const refreshed = await getCustomerAPI(id)
       const data = refreshed || {}
@@ -98,12 +98,12 @@ export default function Profile() {
         email: data.email || '',
         phone: data.phone || data.mobile || '',
         address: data.address || '',
-        image: data.image || ''
+        imageUrl: data.imageUrl || data.image || ''
       })
 
-      // persist displayed name/image/email/phone/address for fast UI updates
+      // Lưu lại để hiển thị nhanh ở các màn khác
       try {
-        if (data.image) localStorage.setItem('auth_user_image', data.image)
+        if (data.imageUrl || data.image) localStorage.setItem('auth_user_image', data.imageUrl || data.image)
         if (data.name) localStorage.setItem('auth_user_name', data.name)
         if (data.email) localStorage.setItem('auth_user_email', data.email)
         if (data.phone) localStorage.setItem('auth_user_phone', data.phone)
@@ -122,13 +122,13 @@ export default function Profile() {
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
-      <Box sx={{ maxWidth: 980, mx: 'auto', p: 3, pt: 6, mb: 6 }}>
-        <Typography variant="h5" sx={{ fontWeight: 700, mb: 6 }}>Hồ sơ của tôi</Typography>
+      <Box sx={{ maxWidth: 980, mx: 'auto', p: 3, pt: 6, mb: 20 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mb: 10, mt: 3 }}>Hồ sơ của tôi</Typography>
 
         <Box sx={{ display: 'flex', gap: 3, background: '#fff', borderRadius: 2, p: 2.5, boxShadow: '0 2px 6px rgba(0,0,0,0.04)', alignItems: 'flex-start', border: '1px solid #0b8798', flexDirection: { xs: 'column', md: 'row' } }}>
           <Box sx={{ width: { xs: '100%', md: 260 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Avatar src={form.image} alt={form.name || 'Khách hàng'} sx={{ width: 120, height: 120, mb: 2, border: '4px solid #f3f7f8' }}>
-              {(!form.image && form.name) ? form.name[0] : ''}
+            <Avatar src={form.imageUrl} alt={form.name || 'Khách hàng'} sx={{ width: 120, height: 120, mb: 2, border: '4px solid #f3f7f8' }}>
+              {(!form.imageUrl && form.name) ? form.name[0] : ''}
             </Avatar>
             <Box sx={{ mt: 1 }}>
               <Button variant="outlined" size="small" onClick={() => setEditing(!editing)} sx={{ mr: 1 }}>Chỉnh sửa hồ sơ</Button>
@@ -140,7 +140,7 @@ export default function Profile() {
             <TextField label="Email" fullWidth value={form.email} onChange={onChange('email')} margin="normal" disabled={!editing} />
             <TextField label="Số điện thoại" fullWidth value={form.phone} onChange={onChange('phone')} margin="normal" disabled={!editing} />
             <TextField label="Địa chỉ" fullWidth value={form.address} onChange={onChange('address')} margin="normal" disabled={!editing} />
-            <TextField label="URL ảnh (avatar)" fullWidth value={form.image} onChange={onChange('image')} margin="normal" disabled={!editing} />
+            <TextField label="URL ảnh (avatar)" fullWidth value={form.imageUrl} onChange={onChange('imageUrl')} margin="normal" disabled={!editing} />
 
             {editing && (
               <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>

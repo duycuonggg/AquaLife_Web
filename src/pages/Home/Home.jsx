@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Box, Grid, Card, CardContent, Button, Typography, TextField, IconButton } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import { getProductsAPI } from '~/apis/index'
 import { addToCart } from '~/utils/cart'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import Banner from '~/assets/Banner.png'
 import banner1 from '~/assets/banner1.png'
 import banner2 from '~/assets/banner2.png'
 import banner3 from '~/assets/banner3.png'
@@ -15,84 +14,59 @@ import productreturn from '~/assets/productreturn.png'
 import delivery from '~/assets/delivery.png'
 import helpdesk from '~/assets/helpdesk.png'
 import favorites from '~/assets/favorites.png'
+import { toast } from 'react-toastify'
 
 export default function Home() {
+  // Trạng thái sản phẩm (lấy từ API) và banner
   const [products, setProducts] = useState([])
-  const [, setLoading] = useState(false)
-  const [search] = useState('')
-  const [selectedBranchId, setSelectedBranchId] = useState('')
   const banners = [banner1, banner2, banner3]
   const [bannerIndex, setBannerIndex] = useState(0)
   const [paused, setPaused] = useState(false)
 
+  // Điều hướng banner: về trước / tiếp theo
   const prev = (e) => { e?.stopPropagation(); setBannerIndex(i => (i - 1 + banners.length) % banners.length) }
   const next = (e) => { e?.stopPropagation(); setBannerIndex(i => (i + 1) % banners.length) }
 
+  // Gọi API lấy danh sách sản phẩm khi vào trang
   useEffect(() => {
     const load = async () => {
-      setLoading(true)
       try {
         const data = await getProductsAPI()
-        setProducts(data || [])
+        setProducts(Array.isArray(data) ? data : [])
       } catch (err) {
-        /* eslint-disable-next-line no-console */
-        console.error('Failed to load products', err)
-      } finally {
-        setLoading(false)
+        // Lỗi khi gọi API
+        toast.error('Không thể truy cập')
       }
     }
     load()
   }, [])
 
-  useEffect(() => {
-    const onBranch = (e) => {
-      const id = e?.detail?.id || ''
-      setSelectedBranchId(id)
-      // scroll to featured products
-      window.scrollTo({ top: 400, behavior: 'smooth' })
-    }
-    window.addEventListener('branchSelected', onBranch)
-    return () => window.removeEventListener('branchSelected', onBranch)
-  }, [])
-
-  // auto-rotate banners every 4 seconds (pauses on hover)
+  // Tự động chuyển banner mỗi 4 giây (tạm dừng khi hover)
   useEffect(() => {
     if (paused) return undefined
     const t = setInterval(() => {
       setBannerIndex((i) => (i + 1) % banners.length)
-    }, 4000)
+    }, 3000)
     return () => clearInterval(t)
   }, [paused, banners.length])
 
-  const matchesBranch = (p) => {
-    if (!selectedBranchId) return true
-    // product may contain branchesId (single), branchesId array, or stockByBranch array
-    if (!p) return false
-    if (p.branchesId && String(p.branchesId) === String(selectedBranchId)) return true
-    if (Array.isArray(p.branchesId) && p.branchesId.map(x => String(x)).includes(String(selectedBranchId))) return true
-    if (Array.isArray(p.stockByBranch)) {
-      if (p.stockByBranch.find(sb => String(sb.branch || sb.branchesId || sb.branchId) === String(selectedBranchId))) return true
-    }
-    if (p.branchId && String(p.branchId) === String(selectedBranchId)) return true
-    return false
-  }
-
-  const featured = (products || []).filter(matchesBranch).slice(0, 8)
+  // Chỉ lấy tối đa 8 sản phẩm để hiển thị nổi bật
+  const featuredProducts = useMemo(() => products.slice(0, 8), [products])
 
   return (
     <Box sx={{ background: 'linear-gradient(180deg, #f7fbfb, #ffffff)' }}>
       <Header />
 
-      {/* Navbar (shared) */}
+      {/* Khu vực banner chính */}
       <Box sx={{ position: 'relative' }}>
         <Box
           role="img"
-          aria-label="Hero banner"
+          aria-label="Banner chính"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           sx={{
             width: '100%',
-            backgroundImage: `url(${banners[bannerIndex] || Banner})`,
+            backgroundImage: `url(${banners[bannerIndex] || banners[0]})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
@@ -101,11 +75,10 @@ export default function Home() {
             transition: 'background-image 0.6s ease-in-out'
           }}
         >
-          {/* dark gradient overlay for contrast */}
+          {/* Lớp phủ giúp chữ nổi bật */}
           <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.46))' }} />
 
-          {/* left text + CTA */}
-          {/* left text + CTA (only on first banner) */}
+          {/* Nội dung bên trái + nút CTA (chỉ hiển thị ở banner đầu) */}
           {bannerIndex === 0 && (
             <Box sx={{ position: 'absolute', left: { xs: 16, md: 48 }, top: '30%', color: '#fff', maxWidth: { xs: '70%', md: '40%' } }}>
               <Typography sx={{ fontWeight: 800, fontSize: { xs: 22, md: 44 }, lineHeight: 1.05, textShadow: '0 6px 20px rgba(0,0,0,0.45)', animation: 'fadeInUp 700ms ease forwards' }}>Chạm vào từng khoảnh khắc</Typography>
@@ -114,7 +87,7 @@ export default function Home() {
             </Box>
           )}
 
-          {/* prev/next controls */}
+          {/* Nút điều hướng banner */}
           <IconButton aria-label="Previous banner" onClick={prev} sx={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#fff', bgcolor: 'rgba(0,0,0,0.3)', '&:hover': { bgcolor: 'rgba(0,0,0,0.45)' } }}>
             <ChevronLeftIcon />
           </IconButton>
@@ -123,7 +96,7 @@ export default function Home() {
           </IconButton>
         </Box>
 
-        {/* indicators */}
+        {/* Chấm chỉ báo vị trí banner */}
         <Box sx={{ position: 'absolute', left: 0, right: 0, bottom: 12, display: 'flex', justifyContent: 'center', gap: 1 }}>
           {banners.map((_, idx) => (
             <Box key={idx} onClick={() => setBannerIndex(idx)} sx={{ width: 10, height: 10, borderRadius: '50%', background: idx === bannerIndex ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.45)', cursor: 'pointer' }} />
@@ -131,7 +104,7 @@ export default function Home() {
         </Box>
       </Box>
 
-      {/* Featured Products (minimal view: image, name, price) */}
+      {/* Sản phẩm nổi bật: hiển thị ảnh, tên, giá */}
       <Box sx={{ maxWidth: 1100, mx: 'auto', p: 1.5, mt: 5 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Sản phẩm nổi bật</Typography>
@@ -139,21 +112,31 @@ export default function Home() {
         </Box>
 
         <Grid container spacing={3}>
-          {(featured || []).filter(p => {
-            if (!search) return true
-            const q = search.toLowerCase()
-            return (p.product_name || '').toLowerCase().includes(q) || (p.product_type || '').toLowerCase().includes(q)
-          }).map((p) => (
+          {featuredProducts.map((p) => (
             <Grid item xs={6} sm={4} md={3} key={p._id || p.id}>
               <Card sx={{ borderRadius: 1, background: '#fff', boxShadow: '0 6px 18px rgba(16,24,32,0.06)' }}>
                 <RouterLink to={`/products/${p._id || p.id}`}>
-                  <Box sx={{ width: '100%', height: 140, backgroundImage: `url(${p.image_url || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 1 }} />
+                  <Box sx={{ width: '100%', height: 140, backgroundImage: `url(${p.imageUrl || ''})`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: 1 }} />
                 </RouterLink>
                 <CardContent>
                   <Typography sx={{ mt: 1, fontWeight: 600 }}>{p.product_name}</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between" mt={1}>
                     <Typography sx={{ color: '#d32f2f', fontWeight: 700 }}>{(Number(p.price) || 0).toLocaleString('vi-VN')} đ</Typography>
-                    <Button variant="contained" size="small" onClick={() => { addToCart(p, 1); try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) { console.error('error', e) } }}>Thêm vào giỏ</Button>
+                    {/* Nút thêm vào giỏ hàng */}
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => {
+                        addToCart(p, 1)
+                        try {
+                          window.dispatchEvent(new CustomEvent('cartUpdated'))
+                        } catch (e) {
+                          toast.error('Lỗi cập nhật giỏ hàng', e)
+                        }
+                      }}
+                    >
+                      Thêm vào giỏ
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -162,7 +145,7 @@ export default function Home() {
         </Grid>
       </Box>
 
-      {/* Feature icons */}
+      {/* Các chính sách/cam kết nổi bật */}
       <Box sx={{ mt: 10 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', width: '100%', mb: 10, mt: 10 }}>Chính Sách và Cam Kết Hàng Đầu</Typography>
@@ -201,7 +184,7 @@ export default function Home() {
         </Box>
       </Box>
 
-      {/* Newsletter signup */}
+      {/* Đăng ký nhận tin khuyến mãi */}
       <Box sx={{ mt: 20, mb: 10 }}>
         <Box sx={{ textAlign: 'center' }} >
           <Typography variant="h5" sx={{ fontWeight: 700, textAlign: 'center', mt: 10, mb: 5 }}>Hãy đăng ký ngay</Typography>
@@ -213,7 +196,7 @@ export default function Home() {
         </Box>
       </Box>
 
-      {/* Footer */}
+      {/* Chân trang */}
       <Footer />
     </Box>
   )

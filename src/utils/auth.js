@@ -4,6 +4,7 @@ export function getUserFromToken() {
     if (!token) return null
     const parts = token.split('.')
     if (parts.length < 2) return null
+    // Giải mã payload JWT ở phần thứ hai
     const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
     return payload
   } catch (err) {

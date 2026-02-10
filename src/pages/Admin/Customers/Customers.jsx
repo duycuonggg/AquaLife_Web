@@ -81,6 +81,7 @@ export default function Customers() {
           <TableBody>
             {(() => {
               const filtered = (customers || []).filter((c) => {
+                if (c.role && c.role !== 'customer') return false
                 if (!searchTerm) return true
                 const q = searchTerm.toLowerCase()
                 return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
@@ -108,6 +109,7 @@ export default function Customers() {
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10, mb: 10 }}>
         <Stack spacing={2}>
           <Pagination count={Math.max(1, Math.ceil(((customers || []).filter((c) => {
+            if (c.role && c.role !== 'customer') return false
             if (!searchTerm) return true
             const q = searchTerm.toLowerCase()
             return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q)
