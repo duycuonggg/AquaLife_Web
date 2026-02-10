@@ -17,7 +17,7 @@ import favorites from '~/assets/favorites.png'
 import { toast } from 'react-toastify'
 
 export default function Home() {
-  // Trạng thái sản phẩm (lấy từ API) và banner hiện tại
+  // Trạng thái sản phẩm (lấy từ API) và banner
   const [products, setProducts] = useState([])
   const banners = [banner1, banner2, banner3]
   const [bannerIndex, setBannerIndex] = useState(0)
